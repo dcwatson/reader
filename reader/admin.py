@@ -1,5 +1,5 @@
 from django.contrib import admin
-from reader.feeds.models import Feed, Story
+from reader.models import Feed, Story
 
 class FeedAdmin (admin.ModelAdmin):
     list_display = ('url', 'title', 'subtitle', 'date_created')

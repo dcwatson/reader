@@ -26,3 +26,23 @@ def get_story_identifier(feed, data):
     if 'id' in data:
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits)).hexdigest()
+
+def get_stories(feeds, user):
+    from reader.models import Story
+    sql = """
+        SELECT
+            s.*,
+            coalesce(rs.is_read, 0) AS "is_read",
+            coalesce(rs.is_starred, 0) AS "is_starred",
+            coalesce(rs.notes, '') AS "notes"
+        FROM
+            reader_story s
+            LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
+        WHERE
+            s.feed_id IN (%(feed_ids)s)
+    """
+    params = {
+        'feed_ids': ', '.join([str(f.pk) for f in feeds]),
+        'user_id': user.pk,
+    }
+    return Story.objects.raw(sql % params)

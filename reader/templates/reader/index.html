@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column feeds">
+    <div class="column-header">
+        <div class="column-actions">
+            <a href=""><i class="icon-plus"></i></a>
+        </div>
+        Feeds
+    </div>
+    <ul id="feeds">
+        {% for feed in feeds %}
+            <li><a class="feed" data-feed-id="{{ feed.pk }}" href="{% url "feed" feed_id=feed.pk %}">{{ feed }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="column stories">
+    <div class="column-header">
+        <div class="column-actions">
+            <a href=""><i class="icon-refresh"></i></a>
+        </div>
+        <span id="feed-title">Selected Feed</span>
+    </div>
+    <ul id="stories"></ul>
+</div>
+
+<div class="column reader">
+    <div class="column-header">
+        <div class="column-actions">
+            <a href=""><i class="icon-ok"></i></a>
+            <a href=""><i class="icon-star-empty"></i></a>
+            <a href=""><i class="icon-share"></i></a>
+        </div>
+        <a id="story-title" target="_blank"></a>
+    </div>
+    <div id="content"></div>
+</div>
+{% endblock %}

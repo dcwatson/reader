@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.conf import settings
 
 class UserManager (BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -86,13 +87,16 @@ class Story (models.Model):
     def natural_key(self):
         return (self.ident,)
 
+    def get_absolute_url(self):
+        return '/feed/%s/%s/' % (self.feed_id, self.pk)
+
 class Subscription (models.Model):
-    user = models.ForeignKey(User, related_name='subscriptions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscriptions')
     date_subscribed = models.DateTimeField(default=timezone.now)
 
 class ReadStory (models.Model):
-    user = models.ForeignKey(User, related_name='read_stories')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories')
     story = models.ForeignKey(Story, related_name='read_stories')
     is_read = models.BooleanField(default=True)
     is_starred = models.BooleanField(default=False)

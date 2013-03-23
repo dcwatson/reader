@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from reader.feeds.models import Feed
+from reader.models import Feed
 import drill
 
 class Command (BaseCommand):

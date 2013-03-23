@@ -1,3 +1,4 @@
 Django<1.6
+django-compressor
 drill
 feedparser

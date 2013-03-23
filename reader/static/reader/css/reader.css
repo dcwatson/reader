@@ -1,0 +1,29 @@
+body {
+    background-color: #222;
+    font-family: 'Oxygen', sans-serif;
+}
+
+.column {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    background-color: #fff;
+}
+
+.column.feeds { left: 20px; width: 300px; }
+.column.stories { left: 340px; width: 400px; }
+.column.reader { left: 760px; right: 20px; }
+
+.column-header {
+    height: 40px;
+    line-height: 40px;
+    padding: 0px 10px;
+    border-bottom: 1px solid #777;
+    font-weight: bold;
+}
+
+.column-actions {
+    float: right;
+}
+
+.column-actions a { color: #000; margin-left: 10px; text-decoration: none; }
