@@ -73,6 +73,13 @@ INSTALLED_APPS = (
     'compressor',
 )
 
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+AUTHENTICATION_BACKENDS = (
+    'reader.backends.EmailTokenBackend',
+)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

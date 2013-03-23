@@ -1,34 +1,46 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.sites.models import Site
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 from django.http import HttpResponse
-from reader.models import Feed, Story
-from reader.utils import get_stories
-import datetime
+from reader.models import Feed, Story, User, UserManager, LoginToken
+from reader.utils import get_stories, ajaxify
 import json
 
-def ajaxify(model, fields=None, extra=None):
-    if fields is None:
-        fields = [f.name for f in model._meta.fields]
-    if extra:
-        fields = list(fields) + list(extra)
-    data = {}
-    for field_name in fields:
-        obj = getattr(model, field_name, None)
-        if hasattr(obj, 'pk'):
-            data[field_name] = obj.pk
-        elif isinstance(obj, datetime.datetime):
-            data[field_name] = obj.isoformat()
-        elif callable(obj):
-            data[field_name] = obj()
-        else:
-            data[field_name] = obj
-    if hasattr(model, 'get_absolute_url'):
-        data['reader_url'] = model.get_absolute_url()
-    return data
-
+@login_required(login_url='/login/')
 def index(request):
     return render(request, 'reader/index.html', {
-        'feeds': Feed.objects.filter(subscriptions__user=request.user),
+#        'feeds': Feed.objects.filter(subscriptions__user=request.user),
+        'feeds': Feed.objects.all(),
+        'site': Site.objects.get_current(),
     })
+
+def login(request):
+    if request.method == 'POST':
+        email = UserManager.normalize_email(request.POST.get('email', '').strip())
+        user, created = User.objects.get_or_create(email=email)
+        token = user.create_token()
+        message = render_to_string('reader/email/login.txt', {
+            'user': user,
+            'created': created,
+            'token': token,
+            'site': Site.objects.get_current(),
+        })
+        user.send_email('Reader Login', message)
+    return render(request, 'reader/login.html', {
+        'site': Site.objects.get_current(),
+    })
+
+def email_login(request, user_id, token):
+    user = auth.authenticate(user_id=user_id, token=token)
+    if user and user.is_active:
+        auth.login(request, user)
+    return redirect('index')
+
+def logout(request):
+    auth.logout(request)
+    return redirect('index')
 
 def feeds(request):
     pass

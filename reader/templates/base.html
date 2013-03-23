@@ -19,6 +19,7 @@
         {% endcompress %}
     </head>
     <body>
+        <h1><a href="{% url "index" %}"><i class="icon-inbox"></i> {{ site.name }}</a></h1>
         {% block content %}{% endblock %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         {% compress js %}

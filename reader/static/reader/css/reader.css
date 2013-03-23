@@ -1,11 +1,16 @@
 body {
     background-color: #222;
     font-family: 'Oxygen', sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
+
+h1 { margin: 0px; padding: 10px 20px; font-size: 24px; }
+h1 a { color: #777; text-decoration: none; }
 
 .column {
     position: absolute;
-    top: 20px;
+    top: 54px;
     bottom: 20px;
     background-color: #fff;
 }
@@ -18,7 +23,7 @@ body {
     height: 40px;
     line-height: 40px;
     padding: 0px 10px;
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid #aaa;
     font-weight: bold;
 }
 
@@ -27,3 +32,34 @@ body {
 }
 
 .column-actions a { color: #000; margin-left: 10px; text-decoration: none; }
+
+.column ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    display: block;
+    position: absolute;
+    top: 41px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow: auto;
+}
+.column li { padding: 0px; margin: 0px; }
+.column li a {
+    display: block;
+    padding: 10px;
+    border-bottom: 1px dotted #ddd;
+    color: #555;
+}
+
+#content {
+    padding: 10px;
+    position: absolute;
+    top: 41px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow: auto;
+}
+#content p { margin: 0px 0px 15px 0px; padding: 0px; }

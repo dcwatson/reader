@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block css %}
+<style>
+    .form { padding: 0px; margin: 0px; }
+    .login-form {
+        padding: 20px;
+        text-align: center;
+    }
+    input {
+        font-size: 24px;
+        padding: 10px;
+        border-radius: 5px;
+        -webkit-appearance: none;
+        border: 0px;
+    }
+    input[type="email"] {
+        width: 500px;
+    }
+    input[type="submit"] {
+        color: #fff;
+        padding: 10px 20px;
+        background-color: #444;
+        text-shadow: 1px 1px 4px #000;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+{% csrf_token %}
+<div class="login-form">
+    <input type="email" name="email" placeholder="Enter your email address" autofocus="autofocus" />
+    <input type="submit" value="Log In" />
+</div>
+</form>
+{% endblock %}

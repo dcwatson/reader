@@ -46,3 +46,23 @@ def get_stories(feeds, user):
         'user_id': user.pk,
     }
     return Story.objects.raw(sql % params)
+
+def ajaxify(model, fields=None, extra=None):
+    if fields is None:
+        fields = [f.name for f in model._meta.fields]
+    if extra:
+        fields = list(fields) + list(extra)
+    data = {}
+    for field_name in fields:
+        obj = getattr(model, field_name, None)
+        if hasattr(obj, 'pk'):
+            data[field_name] = obj.pk
+        elif isinstance(obj, datetime.datetime):
+            data[field_name] = obj.isoformat()
+        elif callable(obj):
+            data[field_name] = obj()
+        else:
+            data[field_name] = obj
+    if hasattr(model, 'get_absolute_url'):
+        data['reader_url'] = model.get_absolute_url()
+    return data

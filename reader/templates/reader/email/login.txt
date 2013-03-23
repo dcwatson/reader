@@ -1,0 +1,8 @@
+Greetings{% if user.name %} {{ user.name }}{% endif %}!
+
+You may click on the link below to access Reader:
+
+http://{{ site.domain }}{{ token.get_absolute_url }}
+
+Regards,
+The Reader Team
