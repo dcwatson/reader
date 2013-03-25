@@ -7,6 +7,13 @@ from django.conf import settings
 import hashlib
 import random
 
+FEED_STATUS_CHOICES = (
+    ('new', 'New'),
+    ('valid', 'Valid'),
+    ('error', 'Error'),
+    ('gone', 'Gone'),
+)
+
 class UserManager (BaseUserManager):
     def create_user(self, email, **extra_fields):
         if not email:
@@ -85,8 +92,10 @@ class Feed (models.Model):
     url = models.CharField(max_length=300, unique=True)
     title = models.CharField(max_length=200, blank=True)
     subtitle = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=20, choices=FEED_STATUS_CHOICES, default='new')
     date_created = models.DateTimeField(default=timezone.now)
-
+    date_updated = models.DateTimeField(null=True, blank=True)
+    
     objects = NaturalKeyManager('url')
 
     def __unicode__(self):

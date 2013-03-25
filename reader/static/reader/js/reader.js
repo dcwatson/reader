@@ -1,59 +1,36 @@
-var FEED_CACHE = {};
+var spinner = new Spinner();
 
-function story_link(story) {
-    return $('<a />').attr({
-        href: story.reader_url
-    }).data({
-        'feed-id': story.feed,
-        'story-id': story.id
-    }).text(story.title).addClass('story');
-}
-
-function show_feed(feed_id) {
-    data = FEED_CACHE[feed_id];
-    $('#feed-title').text(data.title);
-    $('#stories').empty();
-    for(var i = 0; i < data.stories.length; i++) {
-        var story = data.stories[i];
-        $('#stories').append($('<li />').append(story_link(story)));
-    }
-}
-
-function show_story(feed_id, story_id) {
-    data = FEED_CACHE[feed_id];
-    var story = null;
-    for(var i = 0; i < data.stories.length; i++) {
-        story = data.stories[i];
-        if(story.id == story_id) {
-            break;
+function load_column(col_sel, url) {
+    var c = $(col_sel).empty();
+    spinner.spin(c[0]);
+    $.ajax({
+        url: url,
+        success: function(html) {
+            spinner.stop();
+            c.append(html);
         }
-    }
-    $('#content').html(story.content);
-    $('#story-title').text(story.title).attr('href', story.link);
+    });
+}
+
+function update_unread_count(feed_id) {
+    var num_read = $('ul.stories li.read').length;
+    var num_unread = $('ul.stories li').length - num_read;
+    console.log(feed_id, num_read, num_unread);
+    $('#unread-' + feed_id).text(num_unread);
 }
 
 $(function() {
-    $('body').on('click', 'a.feed', function(e) {
-        var feed_id = parseInt($(this).data('feed-id'));
-        if(FEED_CACHE[feed_id]) {
-            show_feed(feed_id);
-        }
-        else {
-            $.ajax({
-                url: $(this).attr('href'),
-                success: function(data) {
-                    FEED_CACHE[data.id] = data;
-                    show_feed(feed_id);
-                }
-            });
-        }
+    load_column('#feeds', '/feeds/');
+    
+    $('body').on('click', 'a.ajax', function(e) {
+        load_column($(this).data('target'), $(this).attr('href'));
         return false;
     });
     
-    $('body').on('click', 'a.story', function(e) {
-        var feed_id = parseInt($(this).data('feed-id'));
-        var story_id = parseInt($(this).data('story-id'));
-        show_story(feed_id, story_id);
+    $('body').on('click', 'a.add-feed', function(e) {
+        $('#fade').show();
+        $('#dialog').show();
+        $('input.add-feed').focus().select();
         return false;
     });
 });

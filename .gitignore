@@ -37,3 +37,4 @@ nosetests.xml
 # reader
 python
 *.db
+/static/

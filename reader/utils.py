@@ -1,6 +1,34 @@
+from django.utils import timezone
+from reader.models import Feed, Story
+from BeautifulSoup import BeautifulSoup
+import feedparser
+import requests
+import urlparse
 import datetime
+import logging
 import hashlib
 import time
+
+logger = logging.getLogger(__name__)
+
+# Parts taken from https://gist.github.com/ksamuel/1308133
+
+FEED_LINK_ATTRIBUTES = (
+    (('type', 'application/rss+xml'),),
+    (('type', 'application/atom+xml'),),
+    (('type', 'application/rss'),),
+    (('type', 'application/atom'),),
+    (('type', 'application/rdf+xml'),),
+    (('type', 'application/rdf'),),
+    (('type', 'text/rss+xml'),),
+    (('type', 'text/atom+xml'),),
+    (('type', 'text/rss'),),
+    (('type', 'text/atom'),),
+    (('type', 'text/rdf+xml'),),
+    (('type', 'text/rdf'),),
+    (('rel', 'alternate'), ('type', 'text/xml')),
+    (('rel', 'alternate'), ('type', 'application/xml')),
+)
 
 def get_story_content(data):
     if 'content' in data:
@@ -66,3 +94,75 @@ def ajaxify(model, fields=None, extra=None):
     if hasattr(model, 'get_absolute_url'):
         data['reader_url'] = model.get_absolute_url()
     return data
+
+def normalize_url(url):
+    scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
+    return urlparse.urlunsplit((scheme.lower(), netloc.lower(), path, query, fragment)).strip()
+
+def fetch_feed(url):
+    try:
+        feed = feedparser.parse(url)
+        if not feed.bozo:
+            # The provided link was a feed link, we're done.
+            return feed
+        # Otherwise, fetch the page and look for <link> elements.
+        r = requests.get(url)
+        head = BeautifulSoup(r.text).find('head')
+        for attrs in FEED_LINK_ATTRIBUTES:
+            for link in head.findAll('link', dict(attrs)):
+                href = dict(link.attrs).get('href', '')
+                if href:
+                    if '://' not in href:
+                        # Use the response URL to build the full feed URL, in case there were redirects.
+                        href = urlparse.urljoin(r.url, href)
+                    feed = feedparser.parse(href)
+                    if not feed.bozo:
+                        return feed
+    except:
+        logger.exception('Error finding feed link for "%s"', url)
+        return None
+
+def update_feed(feed, info=None):
+    if info is None:
+        info = fetch_feed(feed.url)
+    if info:
+        feed.status = 'valid'
+        if info.status in (200, 301):
+            # For successful fetches or permanent redirects, record the "resolved" URL (after redirects).
+            new_url = normalize_url(info.href)
+            if not Feed.objects.filter(url=new_url).exists():
+                feed.url = new_url
+        elif info.status in (410,):
+            feed.status = 'gone'
+        feed.title = info['feed'].get('title', '').strip()
+        feed.subtitle = info['feed'].get('subtitle', '').strip()
+        for e in info.entries:
+            ident = get_story_identifier(feed, e)
+            story, created = Story.objects.get_or_create(feed=feed, ident=ident)
+            story.title = e.get('title', '').strip()
+            story.author = e.get('author', '').strip()
+            story.content = get_story_content(e)
+            story.link = e.get('link', '').strip()
+            story.date_published = get_story_date(e)
+            story.save()
+    else:
+        feed.status = 'error'
+    feed.date_updated = timezone.now()
+    feed.save()
+
+def create_feed(url):
+    url = normalize_url(url)
+    try:
+        # If the Feed already exists, return it (without updating).
+        return Feed.objects.get(url=url)
+    except Feed.DoesNotExist:
+        # Otherwise, try to download it to get the "resolved" URL.
+        info = fetch_feed(url)
+        if info:
+            url = normalize_url(info.href)
+            feed, created = Feed.objects.get_or_create(url=url)
+            # Since we alredy downloaded the feed data, we may as well update it.
+            update_feed(feed, info=info)
+            return feed
+        else:
+            return Feed.objects.create(url=url, status='error')

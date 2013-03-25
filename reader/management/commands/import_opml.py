@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from reader.models import Feed
+from reader.utils import create_feed
 import drill
 
 class Command (BaseCommand):
@@ -8,8 +8,5 @@ class Command (BaseCommand):
         for filename in args:
             root = drill.parse(filename)
             for e in root.find('//outline'):
-                try:
-                    feed = Feed.objects.create(url=e['xmlUrl'].strip())
-                    print 'Imported', feed.url
-                except:
-                    pass
+                feed = create_feed(e['xmlUrl'].strip())
+                print 'Imported', feed.url

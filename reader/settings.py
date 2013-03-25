@@ -29,8 +29,9 @@ USE_TZ = True
 
 MEDIA_ROOT = ''
 MEDIA_URL = ''
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+LOGIN_URL = '/login/'
 
 STATICFILES_DIRS = (
 )
@@ -38,6 +39,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 SECRET_KEY = 'vx&62u*!d%t#6c8764r20e5#(tze0*$31z1^eur@&w0%yn6^8t'
@@ -103,3 +105,5 @@ LOGGING = {
         },
     }
 }
+
+COMPRESS_ENABLED = True
