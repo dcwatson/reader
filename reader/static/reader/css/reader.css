@@ -19,6 +19,12 @@ h1 a { color: #777; text-decoration: none; }
 #stories { left: 340px; width: 400px; }
 #story { left: 760px; right: 20px; }
 
+@media all and (max-width: 1280px) and (min-width: 500px) {
+    #feeds { left: 2%; width: 47%; height: 300px; }
+    #stories { left: 51%; width: 47%; height: 300px; }
+    #story { top: 374px; left: 2%; right: 2%; bottom: 20px; }
+}
+
 .column-header {
     height: 40px;
     line-height: 40px;
