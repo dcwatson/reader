@@ -1,15 +1,26 @@
 <div class="column-header">
     <div class="column-actions">
-        <a class="ajax" data-target="#stories" href="{% url "feed" feed_id=feed.pk %}"><i class="icon-refresh"></i></a>
+        <a class="all-read" href="{{ request_path }}"><i class="icon-check"></i></a>
+        <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>
-    {{ feed }}
+    {{ title }}
 </div>
 <ul class="scroll-list stories">
     {% for story in stories %}
-        <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.pk }}">
-            <a class="story ajax" data-target="#story" href="{% url "story" feed_id=feed.pk story_id=story.pk %}">
+        {% ifchanged story.date_published.date %}
+        <li class="section">{{ story.date_published.date }}</li>
+        {% endifchanged %}
+        <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.ident }}">
+            <a class="story ajax" data-target="#story" href="{{ story.get_absolute_url }}">
                 <i class="icon-read-status"></i> {{ story }}
             </a>
         </li>
+    {% empty %}
+        <li class="message">No unread stories.</li>
     {% endfor %}
 </ul>
+{% if feed %}
+<script>
+update_unread_count({{ feed.pk }});
+</script>
+{% endif %}

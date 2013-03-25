@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.contrib.sites.models import Site
 from reader.models import Feed, Story
 from BeautifulSoup import BeautifulSoup
 import feedparser
@@ -30,6 +31,12 @@ FEED_LINK_ATTRIBUTES = (
     (('rel', 'alternate'), ('type', 'application/xml')),
 )
 
+def reader_context(request):
+    return {
+        'site': Site.objects.get_current(),
+        'request_path': request.path,
+    }
+
 def get_story_content(data):
     if 'content' in data:
         return data['content'][0]['value'].strip()
@@ -55,7 +62,7 @@ def get_story_identifier(feed, data):
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits)).hexdigest()
 
-def get_stories(feeds, user):
+def get_stories(feeds, user, read=None, starred=None):
     from reader.models import Story
     sql = """
         SELECT
@@ -68,10 +75,24 @@ def get_stories(feeds, user):
             LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
         WHERE
             s.feed_id IN (%(feed_ids)s)
+            %(where)s
+        ORDER BY s.date_published DESC
     """
+    where = []
+    if read is not None:
+        if read:
+            where.append('rs.is_read = 1')
+        else:
+            where.append('(rs.is_read = 0 OR rs.is_read IS NULL)')
+    if starred is not None:
+        if starred:
+            where.append('rs.is_starred = 1')
+        else:
+            where.append('(rs.is_starred = 0 OR rs.is_starred IS NULL)')
     params = {
-        'feed_ids': ', '.join([str(f.pk) for f in feeds]),
         'user_id': user.pk,
+        'feed_ids': ', '.join([str(f.pk) for f in feeds]),
+        'where': 'AND %s' % ' AND '.join(where) if where else '',
     }
     return Story.objects.raw(sql % params)
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.conf import settings
 import hashlib
@@ -95,7 +96,7 @@ class Feed (models.Model):
     status = models.CharField(max_length=20, choices=FEED_STATUS_CHOICES, default='new')
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(null=True, blank=True)
-    
+
     objects = NaturalKeyManager('url')
 
     def __unicode__(self):
@@ -103,6 +104,9 @@ class Feed (models.Model):
 
     def natural_key(self):
         return (self.url,)
+
+    def get_absolute_url(self):
+        return reverse('feed', kwargs={'feed_id': self.pk})
 
 class Story (models.Model):
     feed = models.ForeignKey(Feed, related_name='stories')
@@ -115,6 +119,9 @@ class Story (models.Model):
 
     objects = NaturalKeyManager('ident')
 
+    class Meta:
+        verbose_name_plural = _('stories')
+
     def __unicode__(self):
         return self.title
 
@@ -122,7 +129,7 @@ class Story (models.Model):
         return (self.ident,)
 
     def get_absolute_url(self):
-        return '/feed/%s/%s/' % (self.feed_id, self.pk)
+        return reverse('story', kwargs={'ident': self.ident})
 
 class Subscription (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
@@ -136,3 +143,6 @@ class ReadStory (models.Model):
     is_starred = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
     date_read = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = _('read stories')

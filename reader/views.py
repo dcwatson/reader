@@ -11,7 +11,6 @@ import json
 @login_required
 def index(request):
     return render(request, 'reader/index.html', {
-        'site': Site.objects.get_current(),
     })
 
 def login(request):
@@ -30,7 +29,6 @@ def login(request):
         })
         user.send_email('Reader Login', message)
     return render(request, 'reader/login.html', {
-        'site': Site.objects.get_current(),
     })
 
 def email_login(request, user_id, token):
@@ -66,21 +64,57 @@ def feeds(request):
 @login_required
 def feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        action = data.get('action', '').strip().lower()
+        if action == 'read':
+            for s in get_stories([feed], request.user, read=False):
+                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
+                status.is_read = True
+                status.save()
+        return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     if not feed.subscriptions.filter(user=request.user).exists():
         print request.user, 'is not subscribed to', feed
-#    response = ajaxify(feed)
-#    response['stories'] = [ajaxify(s, extra=('is_read', 'is_starred', 'notes')) for s in get_stories([feed], request.user)]
-#    return HttpResponse(json.dumps(response, indent=4), content_type='application/json')
     return render(request, 'reader/parts/stories.html', {
+        'title': unicode(feed),
         'feed': feed,
         'stories': get_stories([feed], request.user),
     })
 
 @login_required
-def story(request, feed_id, story_id):
-    story = get_object_or_404(Story, pk=story_id, feed__pk=feed_id)
+def story(request, ident):
+    story = get_object_or_404(Story, ident=ident)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        action = data.get('action', '').strip().lower()
+        if action in ('star', 'unstar'):
+            status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+            status.is_starred = action == 'star'
+            status.save()
+        elif action in ('read', 'unread'):
+            status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+            status.is_read = action == 'read'
+            status.save()
+        return HttpResponse(json.dumps({'story': story.ident, 'action': action}), content_type='applcation/json')
     status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+    status.is_read = True
+    status.save()
     return render(request, 'reader/parts/story.html', {
         'story': story,
         'status': status,
+        'first_read': created,
+    })
+
+@login_required
+def unread(request):
+    return render(request, 'reader/parts/stories.html', {
+        'title': 'Unread Stories',
+        'stories': get_stories(Feed.objects.filter(subscriptions__user=request.user), request.user, read=False),
+    })
+
+@login_required
+def starred(request):
+    return render(request, 'reader/parts/stories.html', {
+        'title': 'Starred',
+        'stories': get_stories(Feed.objects.filter(subscriptions__user=request.user), request.user, starred=True),
     })

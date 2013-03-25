@@ -1,15 +1,18 @@
 <div class="column-header">
     <div class="column-actions">
-        <a href=""><i class="icon-ok"></i></a>
-        <a href=""><i class="icon-star-empty"></i></a>
-        <a href=""><i class="icon-share"></i></a>
+        <a class="story-action {% if status.is_read %}read{% else %}unread{% endif %}" href="{{ story.get_absolute_url }}"><i class="icon-read-status"></i></a>
+        <a class="story-action {% if status.is_starred %}starred{% else %}unstarred{% endif %}" href="{{ story.get_absolute_url }}"><i class="icon-star-status"></i></a>
     </div>
     <a class="column-title" href="{{ story.link }}" target="_blank">{{ story.title }}</a>
 </div>
 <div class="scroll-content story">
     {{ story.content|safe }}
 </div>
+{% if status.is_read %}
 <script>
-    $('li[data-story="{{ story.pk }}"]').addClass('read');
+    $('li[data-story="{{ story.ident }}"]').addClass('read');
+    {% if first_read %}
     update_unread_count({{ story.feed.pk }});
+    {% endif %}
 </script>
+{% endif %}

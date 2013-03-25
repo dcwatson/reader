@@ -6,11 +6,25 @@
     Feeds
 </div>
 <ul class="scroll-list feeds">
+    <li>
+        <a class="feed ajax" data-target="#stories" href="{% url "unread" %}">
+            <i class="icon-check-empty"></i>
+            All Unread
+        </a>
+    </li>
+    <li>
+        <a class="feed ajax" data-target="#stories" href="{% url "starred" %}">
+            <i class="icon-star"></i>
+            Starred
+        </a>
+    </li>
+    <li class="section">Subscribed Feeds</li>
     {% for feed in feeds %}
         <li class="{{ feed.status }}">
             <a class="feed ajax" data-target="#stories" href="{% url "feed" feed_id=feed.pk %}">
                 <i class="icon-{% if feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
-                {{ feed }} (<span id="unread-{{ feed.pk }}">{{ feed.unread_count|default:0 }}</span>)
+                {{ feed }}
+                (<span id="unread-{{ feed.pk }}">{{ feed.unread_count|default:0 }}</span>)
             </a>
         </li>
     {% endfor %}
