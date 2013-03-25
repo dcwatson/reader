@@ -46,10 +46,10 @@ def get_story_content(data):
 
 def get_story_date(data):
     if 'published_parsed' in data:
-        return datetime.datetime.fromtimestamp(time.mktime(data['published_parsed']))
+        return datetime.datetime.fromtimestamp(time.mktime(data['published_parsed'])).replace(tzinfo=timezone.utc)
     elif 'updated_parsed' in data:
-        return datetime.datetime.fromtimestamp(time.mktime(data['updated_parsed']))
-    return datetime.datetime.now()
+        return datetime.datetime.fromtimestamp(time.mktime(data['updated_parsed'])).replace(tzinfo=timezone.utc)
+    return datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
 
 def get_story_identifier(feed, data):
     bits = [
@@ -120,10 +120,17 @@ def normalize_url(url):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
     return urlparse.urlunsplit((scheme.lower(), netloc.lower(), path, query, fragment)).strip()
 
+def valid_feed(feed):
+    if not feed.bozo:
+        return True
+    if isinstance(feed.bozo_exception, feedparser.CharacterEncodingOverride):
+        return True
+    return False
+
 def fetch_feed(url):
     try:
         feed = feedparser.parse(url)
-        if not feed.bozo:
+        if valid_feed(feed):
             # The provided link was a feed link, we're done.
             return feed
         # Otherwise, fetch the page and look for <link> elements.
@@ -137,7 +144,7 @@ def fetch_feed(url):
                         # Use the response URL to build the full feed URL, in case there were redirects.
                         href = urlparse.urljoin(r.url, href)
                     feed = feedparser.parse(href)
-                    if not feed.bozo:
+                    if valid_feed(feed):
                         return feed
     except:
         logger.exception('Error finding feed link for "%s"', url)

@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from reader.models import Feed
 from reader.utils import update_feed
 
 class Command (BaseCommand):
