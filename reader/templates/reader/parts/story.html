@@ -1,0 +1,15 @@
+<div class="column-header">
+    <div class="column-actions">
+        <a href=""><i class="icon-ok"></i></a>
+        <a href=""><i class="icon-star-empty"></i></a>
+        <a href=""><i class="icon-share"></i></a>
+    </div>
+    <a class="column-title" href="{{ story.link }}" target="_blank">{{ story.title }}</a>
+</div>
+<div class="scroll-content story">
+    {{ story.content|safe }}
+</div>
+<script>
+    $('li[data-story="{{ story.pk }}"]').addClass('read');
+    update_unread_count({{ story.feed.pk }});
+</script>

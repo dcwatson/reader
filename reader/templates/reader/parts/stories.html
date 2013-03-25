@@ -1,0 +1,15 @@
+<div class="column-header">
+    <div class="column-actions">
+        <a class="ajax" data-target="#stories" href="{% url "feed" feed_id=feed.pk %}"><i class="icon-refresh"></i></a>
+    </div>
+    {{ feed }}
+</div>
+<ul class="scroll-list stories">
+    {% for story in stories %}
+        <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.pk }}">
+            <a class="story ajax" data-target="#story" href="{% url "story" feed_id=feed.pk story_id=story.pk %}">
+                <i class="icon-read-status"></i> {{ story }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
