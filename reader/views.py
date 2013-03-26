@@ -3,9 +3,12 @@ from django.contrib.sites.models import Site
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.http import HttpResponse
+from django.conf import settings
 from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory
 from reader.utils import get_stories, ajaxify, create_feed
+import datetime
 import json
 
 @login_required
@@ -14,6 +17,7 @@ def index(request):
     })
 
 def login(request):
+    sent = None
     if request.method == 'POST':
         email = UserManager.normalize_email(request.POST.get('email', '').strip())
         user, created = User.objects.get_or_create(email=email)
@@ -26,12 +30,18 @@ def login(request):
             'created': created,
             'token': token,
             'site': Site.objects.get_current(),
+            'expire_hours': settings.READER_TOKEN_EXPIRE,
         })
         user.send_email('Reader Login', message)
+        sent = user.email
     return render(request, 'reader/login.html', {
+        'sent': sent,
     })
 
 def email_login(request, user_id, token):
+    # Wipe out any login tokens older than 2 hours.
+    expire_date = timezone.now() - datetime.timedelta(hours=settings.READER_TOKEN_EXPIRE)
+    LoginToken.objects.filter(date_created__lt=expire_date).delete()
     user = auth.authenticate(user_id=user_id, token=token)
     if user and user.is_active:
         auth.login(request, user)

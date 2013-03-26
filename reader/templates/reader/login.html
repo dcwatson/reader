@@ -23,6 +23,10 @@
         background-color: #444;
         text-shadow: 1px 1px 4px #000;
     }
+    p.explain {
+        color: #fff;
+        text-align: center;
+    }
 </style>
 {% endblock %}
 
@@ -30,6 +34,11 @@
 {% endblock %}
 
 {% block content %}
+{% if sent %}
+<p class="explain">A login link has been sent to {{ sent }}.</p>
+{% else %}
+<p class="explain">To log in to {{ site.name }}, enter your email address below. A link allowing you
+to log in directly will be sent to the email address you provide.</p>
 <form action="" method="post">
 {% csrf_token %}
 <div class="login-form">
@@ -37,4 +46,5 @@
     <input type="submit" value="Log In" />
 </div>
 </form>
+{% endif %}
 {% endblock %}

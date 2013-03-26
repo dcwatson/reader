@@ -47,8 +47,8 @@ $(function() {
     load_column('#feeds', '/feeds/');
 
     $('body').on('click', 'a.ajax', function(e) {
-        $('a.selected', $(this).parent().parent()).removeClass('selected');
-        $(this).addClass('selected');
+        $('li.selected', $(this).parent().parent()).removeClass('selected');
+        $(this).parent().addClass('selected');
         load_column($(this).data('target'), $(this).attr('href'));
         return false;
     });

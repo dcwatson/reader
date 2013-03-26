@@ -1,8 +1,10 @@
 Greetings{% if user.name %} {{ user.name }}{% endif %}!
 
-You may click on the link below to access Reader:
+You may click on the link below to access {{ site.name }}:
 
 http://{{ site.domain }}{{ token.get_absolute_url }}
+
+This link will be valid for {{ expire_hours }} hours.
 
 Regards,
 The Reader Team

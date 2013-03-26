@@ -50,17 +50,21 @@ ul.scroll-list {
     bottom: 0px;
     overflow: auto;
 }
-ul.scroll-list li { padding: 0px; margin: 0px; }
+ul.scroll-list li { padding: 0px; margin: 0px; border-bottom: 1px dotted #ddd; }
 ul.scroll-list li.section { padding: 10px; text-align: center; color: #999; border-bottom: 1px dotted #ddd; font-size: 12px; }
 ul.scroll-list li.message { padding: 10px; text-align: center; color: #999; }
 ul.scroll-list li a {
     display: block;
     padding: 10px;
-    border-bottom: 1px dotted #ddd;
     color: #333;
     text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-ul.scroll-list li a.selected { background-color: #444; color: #fff; }
+ul.scroll-list li.selected { background-color: #444; }
+ul.scroll-list li.selected a { color: #fff; }
+span.time { float: right; color: #999; font-size: 11px; margin: 14px 5px 0px 0px; }
 
 div.scroll-content {
     padding: 10px;

@@ -5,9 +5,7 @@ class EmailTokenBackend (object):
     def authenticate(self, user_id=None, token=None):
         try:
             token_obj = LoginToken.objects.get(user__pk=user_id, token=token)
-            user = token_obj.user
-            token_obj.delete()
-            return user
+            return token_obj.user
         except LoginToken.DoesNotExist:
             return None
 

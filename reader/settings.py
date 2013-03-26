@@ -118,3 +118,5 @@ LOGGING = {
 }
 
 COMPRESS_ENABLED = True
+
+READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
