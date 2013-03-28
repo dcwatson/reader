@@ -28,12 +28,15 @@ function load_column(col_sel, url) {
     });
 }
 
-function update_unread_count(feed_id) {
-    /*
-    var num_read = $('ul.stories li.read').length;
-    var num_unread = $('ul.stories li').length - num_read;
-    $('#unread-' + feed_id).text(num_unread);
-    */
+function update_unread_count(feed_id, zero) {
+    try {
+        var e = $('a.feed[data-feed="' + feed_id + '"] > span.unread');
+        var num = parseInt(e.text());
+        var by = zero ? num : 1;
+        e.text(num - by);
+    }
+    catch(e) {
+    }
 }
 
 STORY_CLASS_ACTIONS = {
@@ -104,8 +107,13 @@ $(function() {
             data: JSON.stringify({action: 'read'}),
             headers: {'X-CSRFToken': getCookie('csrftoken')},
             success: function(data) {
-                console.log(data);
                 $('.stories li', a.parent().parent().parent()).addClass('read');
+                if(a.data('feed')) {
+                    update_unread_count(a.data('feed'), true);
+                }
+                else {
+                    $('span.unread').text(0);
+                }
             }
         })
         return false;

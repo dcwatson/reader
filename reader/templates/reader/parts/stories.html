@@ -1,6 +1,6 @@
 <div class="column-header">
     <div class="column-actions">
-        <a class="all-read" href="{{ request_path }}"><i class="icon-check"></i></a>
+        <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="icon-check"></i></a>
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>
     {{ title }}
@@ -11,18 +11,14 @@
         <li class="section">{{ story.date_published.date }}</li>
         {% endifchanged %}
         <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.ident }}">
-            <span class="time">{{ story.date_published|date:"P" }}</span>
             <a class="story ajax" data-target="#story" href="{{ story.get_absolute_url }}">
+                <span class="time">{{ story.date_published|date:"P" }}</span>
                 <i class="icon-read-status"></i>
                 {{ story }}
+                {% if extra_info %}<span class="story-info">{{ story.feed }} &mdash; {{ story.author }}</span>{% endif %}
             </a>
         </li>
     {% empty %}
         <li class="message">No unread stories.</li>
     {% endfor %}
 </ul>
-{% if feed %}
-<script>
-update_unread_count({{ feed.pk }});
-</script>
-{% endif %}

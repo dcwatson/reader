@@ -1,6 +1,7 @@
 body {
     background-color: #222;
     font-family: 'Oxygen', sans-serif;
+    font-size: 14px;
     margin: 0px;
     padding: 0px;
 }
@@ -31,6 +32,7 @@ h1 a { color: #777; text-decoration: none; }
     padding: 0px 10px;
     border-bottom: 1px solid #aaa;
     font-weight: bold;
+    box-shadow: 0px 1px 2px #ccc;
 }
 
 .column-actions { float: right; }
@@ -49,6 +51,7 @@ ul.scroll-list {
     right: 0px;
     bottom: 0px;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
 ul.scroll-list li { padding: 0px; margin: 0px; border-bottom: 1px dotted #ddd; }
 ul.scroll-list li.section { padding: 10px; text-align: center; color: #999; border-bottom: 1px dotted #ddd; font-size: 12px; }
@@ -64,7 +67,10 @@ ul.scroll-list li a {
 }
 ul.scroll-list li.selected { background-color: #444; }
 ul.scroll-list li.selected a { color: #fff; }
-span.time { float: right; color: #999; font-size: 11px; margin: 14px 5px 0px 0px; }
+
+span.time { float: right; color: #999; font-size: 11px; margin: 2px 0px 0px 5px; }
+span.story-info { float: left; width: 90%; margin-top: 3px; font-size: 80%; color: #999; margin-left: 22px; }
+div.story-info { margin-bottom: 15px; font-style: italic; }
 
 div.scroll-content {
     padding: 10px;
@@ -74,8 +80,11 @@ div.scroll-content {
     right: 0px;
     bottom: 0px;
     overflow: auto;
+    line-height: 1.5em;
+    -webkit-overflow-scrolling: touch;
 }
 div.scroll-content p { margin: 0px 0px 15px 0px; padding: 0px; }
+div.scroll-content img { max-width: 100%; }
 
 .feeds li.error a { color: red; }
 .stories li.read a { color: #aaa; }

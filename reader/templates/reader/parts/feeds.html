@@ -21,10 +21,10 @@
     <li class="section">Subscribed Feeds</li>
     {% for feed in feeds %}
         <li class="{{ feed.status }}">
-            <a class="feed ajax" data-target="#stories" href="{% url "feed" feed_id=feed.pk %}">
+            <a class="feed ajax" data-target="#stories" data-feed="{{ feed.pk }}" href="{% url "feed" feed_id=feed.pk %}">
                 <i class="icon-{% if feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
                 {{ feed }}
-                (<span id="unread-{{ feed.pk }}">{{ feed.unread_count|default:0 }}</span>)
+                (<span class="unread">{{ feed.unread_count|default:0 }}</span>)
             </a>
         </li>
     {% endfor %}

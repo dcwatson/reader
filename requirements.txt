@@ -4,3 +4,4 @@ django-compressor
 drill
 feedparser
 requests
+South

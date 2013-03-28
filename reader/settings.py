@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'reader',
     'compressor',
+    'south',
 )
 
 if DEBUG:

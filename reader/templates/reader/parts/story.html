@@ -6,6 +6,7 @@
     <a class="column-title" href="{{ story.link }}" target="_blank">{{ story.title }}</a>
 </div>
 <div class="scroll-content story">
+    <div class="story-info">{% if story.author %}{{ story.author }}, {% endif %}{{ story.feed }}</div>
     {{ story.content|safe }}
 </div>
 {% if status.is_read %}

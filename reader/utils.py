@@ -13,7 +13,6 @@ import time
 logger = logging.getLogger(__name__)
 
 # Parts taken from https://gist.github.com/ksamuel/1308133
-
 FEED_LINK_ATTRIBUTES = (
     (('type', 'application/rss+xml'),),
     (('type', 'application/atom+xml'),),
@@ -63,7 +62,6 @@ def get_story_identifier(feed, data):
     return hashlib.sha1('\n'.join(bits)).hexdigest()
 
 def get_stories(feeds, user, read=None, starred=None):
-    from reader.models import Story
     sql = """
         SELECT
             s.*,

@@ -146,3 +146,4 @@ class ReadStory (models.Model):
 
     class Meta:
         verbose_name_plural = _('read stories')
+        unique_together = ('user', 'story')

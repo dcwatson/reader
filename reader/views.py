@@ -117,14 +117,36 @@ def story(request, ident):
 
 @login_required
 def unread(request):
+    feeds = Feed.objects.filter(subscriptions__user=request.user)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        action = data.get('action', '').strip().lower()
+        if action == 'read':
+            for s in get_stories(feeds, request.user, read=False):
+                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
+                status.is_read = True
+                status.save()
+        return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     return render(request, 'reader/parts/stories.html', {
         'title': 'Unread Stories',
-        'stories': get_stories(Feed.objects.filter(subscriptions__user=request.user), request.user, read=False),
+        'stories': get_stories(feeds, request.user, read=False),
+        'extra_info': True,
     })
 
 @login_required
 def starred(request):
+    feeds = Feed.objects.filter(subscriptions__user=request.user)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        action = data.get('action', '').strip().lower()
+        if action == 'read':
+            for s in get_stories(feeds, request.user, read=False):
+                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
+                status.is_read = True
+                status.save()
+        return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     return render(request, 'reader/parts/stories.html', {
         'title': 'Starred',
-        'stories': get_stories(Feed.objects.filter(subscriptions__user=request.user), request.user, starred=True),
+        'stories': get_stories(feeds, request.user, starred=True),
+        'extra_info': True,
     })
