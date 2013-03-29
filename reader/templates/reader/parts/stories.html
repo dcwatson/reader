@@ -3,6 +3,7 @@
         <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="icon-check"></i></a>
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>
+    {% if show_back %}<a class="back" href="{% url "feeds" %}"><i class="icon-arrow-left"></i></a>{% endif %}
     {{ title }}
 </div>
 <ul class="scroll-list stories">

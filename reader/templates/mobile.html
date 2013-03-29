@@ -10,22 +10,18 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <title>{% block title %}Reader{% endblock %}</title>
         <meta name="description" content="" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link href="http://fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
         {% compress css %}
             <link rel="stylesheet" href="{% static "reader/css/font-awesome.min.css" %}" />
             <link rel="stylesheet" href="{% static "reader/css/reader.css" %}" />
+            <style>body { background-color: #fff; font-size: 16px; }</style>
             {% block css %}{% endblock %}
         {% endcompress %}
     </head>
     <body>
-        <div class="mobile-prompt">You probably want the <a href="/feeds/">mobile site</a>.</div>
-        <h1><a href="{% url "index" %}"><i class="icon-inbox"></i> {{ site.name }}</a></h1>
         {% block content %}{% endblock %}
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         {% compress js %}
-            <script src="{% static "reader/js/spin.min.js" %}"></script>
-            <script src="{% static "reader/js/reader.js" %}"></script>
             {% block js %}{% endblock %}
         {% endcompress %}
     </body>

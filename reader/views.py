@@ -65,7 +65,8 @@ def feeds(request):
         LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
         WHERE s.feed_id = reader_feed.id AND (rs.is_read = 0 OR rs.is_read IS NULL)
     """ % {'user_id': request.user.pk}
-    return render(request, 'reader/parts/feeds.html', {
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/feeds.html' % f, {
         'feeds': Feed.objects.filter(subscriptions__user=request.user).extra(select={
             'unread_count': count_sql,
         }),
@@ -85,7 +86,8 @@ def feed(request, feed_id):
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     if not feed.subscriptions.filter(user=request.user).exists():
         print request.user, 'is not subscribed to', feed
-    return render(request, 'reader/parts/stories.html', {
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/stories.html' % f, {
         'title': unicode(feed),
         'feed': feed,
         'stories': get_stories([feed], request.user),
@@ -109,7 +111,8 @@ def story(request, ident):
     status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
     status.is_read = True
     status.save()
-    return render(request, 'reader/parts/story.html', {
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/story.html' % f, {
         'story': story,
         'status': status,
         'first_read': created,
@@ -127,7 +130,8 @@ def unread(request):
                 status.is_read = True
                 status.save()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
-    return render(request, 'reader/parts/stories.html', {
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/stories.html' % f, {
         'title': 'Unread Stories',
         'stories': get_stories(feeds, request.user, read=False),
         'extra_info': True,
@@ -145,7 +149,8 @@ def starred(request):
                 status.is_read = True
                 status.save()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
-    return render(request, 'reader/parts/stories.html', {
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/stories.html' % f, {
         'title': 'Starred',
         'stories': get_stories(feeds, request.user, starred=True),
         'extra_info': True,
