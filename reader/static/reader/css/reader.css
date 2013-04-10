@@ -73,6 +73,7 @@ ul.scroll-list li a {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+ul.scroll-list li.unread a { font-weight: bold; color: #000; }
 ul.scroll-list li.selected { background-color: #444; }
 ul.scroll-list li.selected a { color: #fff; }
 

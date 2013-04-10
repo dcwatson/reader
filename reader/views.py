@@ -69,7 +69,8 @@ def feeds(request):
     return render(request, 'reader/%s/feeds.html' % f, {
         'feeds': Feed.objects.filter(subscriptions__user=request.user).extra(select={
             'unread_count': count_sql,
-        }),
+            'title_lower': 'lower(reader_feed.title)',
+        }, order_by=('title_lower',)),
     })
 
 @login_required
@@ -87,6 +88,7 @@ def feed(request, feed_id):
     if not feed.subscriptions.filter(user=request.user).exists():
         print request.user, 'is not subscribed to', feed
     f = 'parts' if request.is_ajax() else 'mobile'
+    # TODO: get date of first (earliest) unread story, only show stories since
     return render(request, 'reader/%s/stories.html' % f, {
         'title': unicode(feed),
         'feed': feed,

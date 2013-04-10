@@ -33,7 +33,11 @@ function update_unread_count(feed_id, zero) {
         var e = $('a.feed[data-feed="' + feed_id + '"] > span.unread');
         var num = parseInt(e.text());
         var by = zero ? num : 1;
-        e.text(num - by);
+        var new_num = Math.max(num - by, 0);
+        e.text(new_num);
+        if(new_num == 0) {
+            e.parent().parent().removeClass('unread');
+        }
     }
     catch(e) {
     }
