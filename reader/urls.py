@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^feeds/$', 'reader.views.feeds', name='feeds'),
     url(r'^feed/(?P<feed_id>\d+)/$', 'reader.views.feed', name='feed'),
+    url(r'^feed/(?P<feed_id>\d+)/settings/$', 'reader.views.feed_settings', name='feed-settings'),
     url(r'^story/(?P<ident>\w+)/$', 'reader.views.story', name='story'),
 
     url(r'^stories/unread/$', 'reader.views.unread', name='unread'),

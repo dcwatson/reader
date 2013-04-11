@@ -94,6 +94,9 @@ AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
 )
 
+SESSION_COOKIE_NAME = 'reader-session'
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4 # 4 weeks in seconds
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

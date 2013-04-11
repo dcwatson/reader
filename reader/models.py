@@ -16,10 +16,11 @@ FEED_STATUS_CHOICES = (
 )
 
 class UserManager (BaseUserManager):
+
     def create_user(self, email, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
-        user = self.model(email=UserManager.normalize_email(email), **extra_fields)
+        user = self.model(email=email.strip().lower(), **extra_fields)
         user.save(using=self._db)
         return user
 

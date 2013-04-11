@@ -61,7 +61,7 @@ def get_story_identifier(feed, data):
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits)).hexdigest()
 
-def get_stories(feeds, user, read=None, starred=None):
+def get_stories(feeds, user, read=None, starred=None, limit=None):
     sql = """
         SELECT
             s.*,
@@ -74,7 +74,9 @@ def get_stories(feeds, user, read=None, starred=None):
         WHERE
             s.feed_id IN (%(feed_ids)s)
             %(where)s
-        ORDER BY s.date_published DESC
+        ORDER BY
+            s.date_published DESC
+        %(limit)s
     """
     where = []
     if read is not None:
@@ -91,6 +93,7 @@ def get_stories(feeds, user, read=None, starred=None):
         'user_id': user.pk,
         'feed_ids': ', '.join([str(f.pk) for f in feeds]),
         'where': 'AND %s' % ' AND '.join(where) if where else '',
+        'limit': 'LIMIT %s' % limit if limit else '',
     }
     return Story.objects.raw(sql % params)
 

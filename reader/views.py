@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.conf import settings
 from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory
 from reader.utils import get_stories, ajaxify, create_feed
+import itertools
+import operator
 import datetime
 import json
 
@@ -19,7 +21,7 @@ def index(request):
 def login(request):
     sent = None
     if request.method == 'POST':
-        email = UserManager.normalize_email(request.POST.get('email', '').strip())
+        email = request.POST.get('email', '').strip().lower()
         user, created = User.objects.get_or_create(email=email)
         if User.objects.count() == 1:
             user.is_admin = True
@@ -87,12 +89,22 @@ def feed(request, feed_id):
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     if not feed.subscriptions.filter(user=request.user).exists():
         print request.user, 'is not subscribed to', feed
+    unread = get_stories([feed], request.user, read=False)
+    last_read = get_stories([feed], request.user, read=True, limit=10)
+    stories = sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True)
     f = 'parts' if request.is_ajax() else 'mobile'
-    # TODO: get date of first (earliest) unread story, only show stories since
     return render(request, 'reader/%s/stories.html' % f, {
         'title': unicode(feed),
         'feed': feed,
-        'stories': get_stories([feed], request.user),
+        'stories': stories,
+    })
+
+@login_required
+def feed_settings(request, feed_id):
+    feed = get_object_or_404(Feed, pk=feed_id)
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/settings.html' % f, {
+        'feed': feed,
     })
 
 @login_required

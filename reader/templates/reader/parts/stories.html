@@ -1,5 +1,6 @@
 <div class="column-header">
     <div class="column-actions">
+        <a class="ajax" data-target="#story" href="{% url "feed-settings" feed_id=feed.pk %}"><i class="icon-cog"></i></a>
         <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="icon-check"></i></a>
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>
@@ -12,7 +13,7 @@
         <li class="section">{{ story.date_published.date }}</li>
         {% endifchanged %}
         <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.ident }}">
-            <a class="story ajax" data-target="#story" href="{{ story.get_absolute_url }}">
+            <a class="story ajax" data-target="#story" href="{{ story.get_absolute_url }}" title="{{ story }}">
                 <span class="time">{{ story.date_published|date:"P" }}</span>
                 <i class="icon-read-status"></i>
                 {{ story }}
