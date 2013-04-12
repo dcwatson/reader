@@ -95,7 +95,7 @@ div.scroll-content {
 div.scroll-content p { margin: 0px 0px 15px 0px; padding: 0px; }
 div.scroll-content img { max-width: 100%; }
 
-.feeds li.error a { color: red; }
+.feeds li.error a { color: red !important; }
 .stories li.read a { color: #aaa; }
 
 .stories li a i:before { content: "\f096"; }
