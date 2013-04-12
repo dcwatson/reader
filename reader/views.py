@@ -89,9 +89,14 @@ def feed(request, feed_id):
             feed.subscriptions.filter(user=request.user).delete()
             ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
-    since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)
     unread = get_stories([feed], request.user, read=False)
-    last_read = get_stories([feed], request.user, read=True, since=since)
+    if subscription.show_read > 0:
+        since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)
+        last_read = get_stories([feed], request.user, read=True, since=since)
+    elif subscription.show_read < 0:
+        last_read = get_stories([feed], request.user, read=True, limit=abs(subscription.show_read))
+    else:
+        last_read = []
     stories = sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True)
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {

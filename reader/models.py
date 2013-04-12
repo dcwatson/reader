@@ -26,6 +26,9 @@ SHOW_READ_CHOICES = (
     (7, '7 days (1 week)'),
     (14, '14 days (2 weeks)'),
     (28, '28 days (4 weeks)'),
+    (-10, '10 stories'),
+    (-25, '25 stories'),
+    (-50, '50 stories'),
 )
 
 class UserManager (BaseUserManager):
