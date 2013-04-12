@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.contrib.sites.models import Site
-from reader.models import Feed, Story
+from reader.models import Feed, Story, ReadStory
 from BeautifulSoup import BeautifulSoup
 import feedparser
 import requests
@@ -65,6 +65,7 @@ def get_stories(feeds, user, read=None, starred=None, since=None, limit=None):
     sql = """
         SELECT
             s.*,
+            rs.id AS "readstory_id",
             coalesce(rs.is_read, 0) AS "is_read",
             coalesce(rs.is_starred, 0) AS "is_starred",
             coalesce(rs.notes, '') AS "notes"
@@ -197,3 +198,17 @@ def create_feed(url):
             return feed
         else:
             return Feed.objects.create(url=url, status='error')
+
+def mark_all_read(feeds, user):
+    """
+    Marks all stories in the given feeds for the given user as read.
+    """
+    update_ids = set()
+    for s in get_stories(feeds, user, read=False):
+        if s.readstory_id:
+            # The ReadStory object already exists, no need to try to get/create it.
+            update_ids.add(s.readstory_id)
+        else:
+            ReadStory.objects.create(story=s, user=user)
+    if update_ids:
+        ReadStory.objects.filter(pk__in=update_ids).update(is_read=True)

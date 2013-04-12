@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.conf import settings
 from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory
-from reader.utils import get_stories, ajaxify, create_feed
+from reader.utils import get_stories, ajaxify, create_feed, mark_all_read
 from reader.forms import SettingsForm
 import itertools
 import operator
@@ -84,10 +84,7 @@ def feed(request, feed_id):
         data = json.loads(request.body)
         action = data.get('action', '').strip().lower()
         if action == 'read':
-            for s in get_stories([feed], request.user, read=False):
-                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
-                status.is_read = True
-                status.save()
+            mark_all_read([feed], request.user)
         elif action == 'unsubscribe':
             feed.subscriptions.filter(user=request.user).delete()
             ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
@@ -95,7 +92,7 @@ def feed(request, feed_id):
     since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)
     unread = get_stories([feed], request.user, read=False)
     last_read = get_stories([feed], request.user, read=True, since=since)
-    stories = list(sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True))
+    stories = sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True)
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
         'title': unicode(feed),
@@ -156,10 +153,7 @@ def unread(request):
         data = json.loads(request.body)
         action = data.get('action', '').strip().lower()
         if action == 'read':
-            for s in get_stories(feeds, request.user, read=False):
-                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
-                status.is_read = True
-                status.save()
+            mark_all_read(feeds, request.user)
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
@@ -175,10 +169,7 @@ def starred(request):
         data = json.loads(request.body)
         action = data.get('action', '').strip().lower()
         if action == 'read':
-            for s in get_stories(feeds, request.user, read=False):
-                status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
-                status.is_read = True
-                status.save()
+            mark_all_read(feeds, request.user)
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
