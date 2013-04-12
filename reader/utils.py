@@ -61,7 +61,7 @@ def get_story_identifier(feed, data):
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits)).hexdigest()
 
-def get_stories(feeds, user, read=None, starred=None, limit=None):
+def get_stories(feeds, user, read=None, starred=None, since=None, limit=None):
     sql = """
         SELECT
             s.*,
@@ -89,6 +89,8 @@ def get_stories(feeds, user, read=None, starred=None, limit=None):
             where.append('rs.is_starred = 1')
         else:
             where.append('(rs.is_starred = 0 OR rs.is_starred IS NULL)')
+    if since is not None:
+        where.append("strftime('%%%%Y-%%%%m-%%%%d', s.date_published) > '%s'" % since.strftime('%Y-%m-%d'))
     params = {
         'user_id': user.pk,
         'feed_ids': ', '.join([str(f.pk) for f in feeds]),

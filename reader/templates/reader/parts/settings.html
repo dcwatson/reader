@@ -4,5 +4,13 @@
     {% if show_back %}<a class="back" href="{{ feed.get_absolute_url }}"><i class="icon-arrow-left"></i></a>{% endif %}
     Settings for {{ feed }}
 </div>
-<div class="scroll-content story">
+<div class="scroll-content settings">
+    {% if feed %}
+    <form action="{% url "feed-settings" feed_id=feed.pk %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save Settings" />
+        <button class="unsubscribe" type="submit" name="action" value="unsubscribe" data-name="{{ feed }}">Unsubscribe</button>
+    </form>
+    {% endif %}
 </div>

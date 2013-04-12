@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory
 from reader.utils import get_stories, ajaxify, create_feed
+from reader.forms import SettingsForm
 import itertools
 import operator
 import datetime
@@ -78,6 +79,7 @@ def feeds(request):
 @login_required
 def feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
+    subscription = get_object_or_404(feed.subscriptions, user=request.user)
     if request.method == 'POST':
         data = json.loads(request.body)
         action = data.get('action', '').strip().lower()
@@ -86,12 +88,14 @@ def feed(request, feed_id):
                 status, created = ReadStory.objects.get_or_create(story=s, user=request.user)
                 status.is_read = True
                 status.save()
+        elif action == 'unsubscribe':
+            feed.subscriptions.filter(user=request.user).delete()
+            ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
-    if not feed.subscriptions.filter(user=request.user).exists():
-        print request.user, 'is not subscribed to', feed
+    since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)
     unread = get_stories([feed], request.user, read=False)
-    last_read = get_stories([feed], request.user, read=True, limit=10)
-    stories = sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True)
+    last_read = get_stories([feed], request.user, read=True, since=since)
+    stories = list(sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True))
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
         'title': unicode(feed),
@@ -102,9 +106,22 @@ def feed(request, feed_id):
 @login_required
 def feed_settings(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
+    subscription = feed.subscriptions.get(user=request.user)
+    if request.method == 'POST':
+        if request.POST.get('action', '').strip().lower() == 'unsubscribe':
+            subscription.delete()
+            ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
+        else:
+            form = SettingsForm(request.POST, instance=subscription)
+            if form.is_valid():
+                form.save()
+        return redirect('index')
+    else:
+        form = SettingsForm(instance=subscription)
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/settings.html' % f, {
         'feed': feed,
+        'form': form,
     })
 
 @login_required

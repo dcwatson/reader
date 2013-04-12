@@ -1,6 +1,8 @@
 <div class="column-header">
     <div class="column-actions">
+        {% if feed.pk %}
         <a class="ajax" data-target="#story" href="{% url "feed-settings" feed_id=feed.pk %}"><i class="icon-cog"></i></a>
+        {% endif %}
         <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="icon-check"></i></a>
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>

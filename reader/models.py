@@ -15,6 +15,19 @@ FEED_STATUS_CHOICES = (
     ('gone', 'Gone'),
 )
 
+SHOW_READ_CHOICES = (
+    (0, 'Do not show read stories'),
+    (1, '1 day'),
+    (2, '2 days'),
+    (3, '3 days'),
+    (4, '4 days'),
+    (5, '5 days'),
+    (6, '6 days'),
+    (7, '7 days (1 week)'),
+    (14, '14 days (2 weeks)'),
+    (28, '28 days (4 weeks)'),
+)
+
 class UserManager (BaseUserManager):
 
     def create_user(self, email, **extra_fields):
@@ -135,7 +148,11 @@ class Story (models.Model):
 class Subscription (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscriptions')
+    show_read = models.IntegerField(_('show read stories back'), choices=SHOW_READ_CHOICES, default=7)
     date_subscribed = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('user', 'feed')
 
 class ReadStory (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories')

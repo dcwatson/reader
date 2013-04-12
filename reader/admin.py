@@ -13,7 +13,7 @@ class UserAdmin (admin.ModelAdmin):
     list_filter = ('is_active', 'is_admin')
 
 class SubscriptionAdmin (admin.ModelAdmin):
-    list_display = ('feed', 'user', 'date_subscribed')
+    list_display = ('feed', 'user', 'show_read', 'date_subscribed')
     list_filter = ('feed', 'user')
 
 class ReadStoryAdmin (admin.ModelAdmin):

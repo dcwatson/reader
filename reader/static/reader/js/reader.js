@@ -22,6 +22,7 @@ function load_column(col_sel, url) {
     $.ajax({
         url: url,
         success: function(html) {
+            $('#story').empty();
             spinner.stop();
             c.append(html);
         }
@@ -49,6 +50,12 @@ STORY_CLASS_ACTIONS = {
     'read': 'unread',
     'unread': 'read'
 };
+
+function reader_reset() {
+    $('#stories').empty();
+    $('#story').empty();
+    load_column('#feeds', '/feeds/');
+}
 
 $(function() {
     load_column('#feeds', '/feeds/');
@@ -121,5 +128,23 @@ $(function() {
             }
         })
         return false;
+    });
+    
+    $('body').on('click', 'button.unsubscribe', function(e) {
+        var name = $(this).data('name');
+        return confirm('Are you sure you want to unsubscribe from "' + name + '"?');
+        /*
+        $.ajax({
+            url: $(this).data('href'),
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({action: 'unsubscribe'}),
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
+            success: function(data) {
+                reader_reset();
+            }
+        });
+        return false;
+        */
     });
 });
