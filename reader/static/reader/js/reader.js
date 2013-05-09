@@ -129,7 +129,7 @@ $(function() {
         })
         return false;
     });
-    
+
     $('body').on('click', 'button.unsubscribe', function(e) {
         var name = $(this).data('name');
         return confirm('Are you sure you want to unsubscribe from "' + name + '"?');
@@ -146,5 +146,11 @@ $(function() {
         });
         return false;
         */
+    });
+
+    $('body').on('submit', '#search-form', function(e) {
+        var url = $(this).attr('action') + '?' + $(this).serialize();
+        load_column('#stories', url);
+        return false;
     });
 });

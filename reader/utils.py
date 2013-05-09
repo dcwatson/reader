@@ -61,7 +61,12 @@ def get_story_identifier(feed, data):
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits)).hexdigest()
 
-def get_stories(feeds, user, read=None, starred=None, since=None, limit=None):
+def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
+    story_ids = None
+    if query:
+        from haystack.query import SearchQuerySet
+        sqs = SearchQuerySet().models(Story).filter(content=query, feed_id__in=[feed.pk for feed in feeds]).order_by('-date_published')
+        story_ids = [r.pk for r in sqs]
     sql = """
         SELECT
             s.*,
@@ -80,6 +85,8 @@ def get_stories(feeds, user, read=None, starred=None, since=None, limit=None):
         %(limit)s
     """
     where = []
+    if story_ids is not None:
+        where.append('s.id IN (%s)' % ', '.join([str(pk) for pk in story_ids]))
     if read is not None:
         if read:
             where.append('rs.is_read = 1')

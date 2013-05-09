@@ -7,7 +7,14 @@
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
     </div>
     {% if show_back %}<a class="back" href="{% url "feeds" %}"><i class="icon-arrow-left"></i></a>{% endif %}
-    {{ title }}
+    {% if search %}
+        <form id="search-form" action="{% url "search" %}" method="get">
+            <input type="search" name="q" value="{{ title }}" autofocus="autofocus" />
+            <input type="submit" value="Search" />
+        </form>
+    {% else %}
+        {{ title }}
+    {% endif %}
 </div>
 <ul class="scroll-list stories">
     {% for story in stories %}
@@ -19,10 +26,10 @@
                 <span class="time">{{ story.date_published|date:"P" }}</span>
                 <i class="icon-read-status"></i>
                 {{ story }}
-                {% if extra_info %}<span class="story-info">{{ story.feed }} &mdash; {{ story.author }}</span>{% endif %}
+                {% if extra_info %}<span class="story-info">{{ story.feed }}{% if story.author %} &mdash; {{ story.author }}{% endif %}</span>{% endif %}
             </a>
         </li>
     {% empty %}
-        <li class="message">No unread stories.</li>
+        <li class="message">No stories.</li>
     {% endfor %}
 </ul>

@@ -125,6 +125,20 @@ class Feed (models.Model):
     def get_absolute_url(self):
         return reverse('feed', kwargs={'feed_id': self.pk})
 
+class SmartFeed (models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='smart_feeds')
+    title = models.CharField(max_length=100, blank=True)
+    query = models.CharField(max_length=100, blank=True)
+    read = models.NullBooleanField()
+    starred = models.NullBooleanField()
+    limit = models.IntegerField(default=50)
+
+    def __unicode__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('smart-feed', kwargs={'feed_id': self.pk})
+
 class Story (models.Model):
     feed = models.ForeignKey(Feed, related_name='stories')
     ident = models.CharField(max_length=40, unique=True)

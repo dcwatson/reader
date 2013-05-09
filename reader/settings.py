@@ -82,8 +82,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'haystack',
     'reader',
     'compressor',
+    'tastypie',
     'south',
 )
 
@@ -93,6 +95,15 @@ if DEBUG:
 AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
 )
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'reader',
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 SESSION_COOKIE_NAME = 'reader-session'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4 # 4 weeks in seconds

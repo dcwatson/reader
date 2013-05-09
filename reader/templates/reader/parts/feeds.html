@@ -18,6 +18,23 @@
             Starred
         </a>
     </li>
+    <li>
+        <a class="feed ajax" data-target="#stories" href="{% url "search" %}">
+            <i class="icon-search"></i>
+            Search
+        </a>
+    </li>
+    {% if smart_feeds %}
+    <li class="section">Smart Feeds</li>
+    {% for feed in smart_feeds %}
+        <li>
+            <a class="feed ajax" data-target="#stories" href="{% url "smart-feed" feed_id=feed.pk %}" title="{{ feed }}">
+                <i class="icon-globe"></i>
+                {{ feed }}
+            </a>
+        </li>
+    {% endfor %}
+    {% endif %}
     <li class="section">Subscribed Feeds</li>
     {% for feed in feeds %}
         <li class="{{ feed.status }}{% if feed.unread_count %} unread{% endif %}">

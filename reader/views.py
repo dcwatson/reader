@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.http import HttpResponse
 from django.conf import settings
-from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory
+from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory, SmartFeed
 from reader.utils import get_stories, ajaxify, create_feed, mark_all_read
 from reader.forms import SettingsForm
 import itertools
@@ -70,6 +70,7 @@ def feeds(request):
     """ % {'user_id': request.user.pk}
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/feeds.html' % f, {
+        'smart_feeds': request.user.smart_feeds.all(),
         'feeds': Feed.objects.filter(subscriptions__user=request.user).extra(select={
             'unread_count': count_sql,
             'title_lower': 'lower(reader_feed.title)',
@@ -180,5 +181,29 @@ def starred(request):
     return render(request, 'reader/%s/stories.html' % f, {
         'title': 'Starred',
         'stories': get_stories(feeds, request.user, starred=True),
+        'extra_info': True,
+    })
+
+@login_required
+def search(request):
+    feeds = Feed.objects.filter(subscriptions__user=request.user)
+    query = request.GET.get('q', '').strip()
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/stories.html' % f, {
+        'title': query,
+        'stories': get_stories(feeds, request.user, query=query) if query else None,
+        'extra_info': True,
+        'search': True,
+    })
+
+@login_required
+def smart_feed(request, feed_id):
+    feed = get_object_or_404(SmartFeed, pk=feed_id, user=request.user)
+    search_feeds = Feed.objects.filter(subscriptions__user=request.user)
+    f = 'parts' if request.is_ajax() else 'mobile'
+    return render(request, 'reader/%s/stories.html' % f, {
+        'title': unicode(feed),
+        'feed': feed,
+        'stories': get_stories(search_feeds, request.user, query=feed.query),
         'extra_info': True,
     })
