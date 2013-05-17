@@ -177,7 +177,10 @@ def update_feed(feed, info=None):
         feed.subtitle = info['feed'].get('subtitle', '').strip()
         for e in info.entries:
             ident = get_story_identifier(feed, e)
-            story, created = Story.objects.get_or_create(feed=feed, ident=ident)
+            try:
+                story = Story.objects.get(feed=feed, ident=ident)
+            except Story.DoesNotExist:
+                story = Story(feed=feed, ident=ident)
             story.title = e.get('title', '').strip()
             story.author = e.get('author', '').strip()
             story.content = get_story_content(e)

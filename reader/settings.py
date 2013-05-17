@@ -135,3 +135,4 @@ LOGGING = {
 COMPRESS_ENABLED = True
 
 READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
+READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
