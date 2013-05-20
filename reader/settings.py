@@ -13,12 +13,16 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'reader.db'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'reader',
+        'USER': 'reader',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
 AUTH_USER_MODEL = 'reader.User'
@@ -26,6 +30,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+DEFAULT_FROM_EMAIL = 'root@localhost'
 
 MEDIA_ROOT = ''
 MEDIA_URL = ''
@@ -134,5 +139,10 @@ LOGGING = {
 
 COMPRESS_ENABLED = True
 
-READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
+READER_TOKEN_EXPIRE = 24 # Expire login tokens after 2 hours.
 READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
+
+try:
+    from local_settings import *
+except:
+    pass

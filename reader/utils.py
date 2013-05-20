@@ -71,8 +71,8 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         SELECT
             s.*,
             rs.id AS "readstory_id",
-            coalesce(rs.is_read, 0) AS "is_read",
-            coalesce(rs.is_starred, 0) AS "is_starred",
+            coalesce(rs.is_read, false) AS "is_read",
+            coalesce(rs.is_starred, false) AS "is_starred",
             coalesce(rs.notes, '') AS "notes"
         FROM
             reader_story s
@@ -89,16 +89,16 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         where.append('s.id IN (%s)' % ', '.join([str(pk) for pk in story_ids]))
     if read is not None:
         if read:
-            where.append('rs.is_read = 1')
+            where.append('rs.is_read = true')
         else:
-            where.append('(rs.is_read = 0 OR rs.is_read IS NULL)')
+            where.append('(rs.is_read = false OR rs.is_read IS NULL)')
     if starred is not None:
         if starred:
-            where.append('rs.is_starred = 1')
+            where.append('rs.is_starred = true')
         else:
-            where.append('(rs.is_starred = 0 OR rs.is_starred IS NULL)')
+            where.append('(rs.is_starred = false OR rs.is_starred IS NULL)')
     if since is not None:
-        where.append("strftime('%%%%Y-%%%%m-%%%%d', s.date_published) > '%s'" % since.strftime('%Y-%m-%d'))
+        where.append("s.date_published::date > '%s'" % since.strftime('%Y-%m-%d'))
     params = {
         'user_id': user.pk,
         'feed_ids': ', '.join([str(f.pk) for f in feeds]),

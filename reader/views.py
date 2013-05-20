@@ -66,7 +66,7 @@ def feeds(request):
         SELECT count(s.id)
         FROM reader_story s
         LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
-        WHERE s.feed_id = reader_feed.id AND (rs.is_read = 0 OR rs.is_read IS NULL)
+        WHERE s.feed_id = reader_feed.id AND (rs.is_read = false OR rs.is_read IS NULL)
     """ % {'user_id': request.user.pk}
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/feeds.html' % f, {
