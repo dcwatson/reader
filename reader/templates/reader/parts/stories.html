@@ -22,8 +22,8 @@
         <li class="section">{{ story.date_published.date }}</li>
         {% endifchanged %}
         <li class="{% if story.is_read %}read{% endif %}" data-story="{{ story.ident }}">
+            <span class="time">{{ story.date_published|date:"P" }}</span>
             <a class="story ajax" data-target="#story" href="{{ story.get_absolute_url }}" title="{{ story }}">
-                <span class="time">{{ story.date_published|date:"P" }}</span>
                 <i class="icon-read-status"></i>
                 {{ story }}
                 {% if extra_info %}<span class="story-info">{{ story.feed }}{% if story.author %} &mdash; {{ story.author }}{% endif %}</span>{% endif %}

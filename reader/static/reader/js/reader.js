@@ -16,6 +16,21 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function update_document_title() {
+    var total = 0;
+    $('span.unread').each(function(idx, elem) {
+        try {
+            total += parseInt($(elem).text());
+        }
+        catch(e) {
+        }
+    });
+    var title = 'Reader';
+    if(total > 0)
+        title += ' (' + total + ')';
+    $(document).attr('title', title);
+}
+
 function load_column(col_sel, url) {
     var c = $(col_sel).empty();
     spinner.spin(c[0]);
@@ -25,6 +40,8 @@ function load_column(col_sel, url) {
             $('#story').empty();
             spinner.stop();
             c.append(html);
+            if(col_sel == '#feeds')
+                update_document_title();
         }
     });
 }
@@ -42,6 +59,7 @@ function update_unread_count(feed_id, zero) {
     }
     catch(e) {
     }
+    update_document_title();
 }
 
 STORY_CLASS_ACTIONS = {
@@ -133,19 +151,6 @@ $(function() {
     $('body').on('click', 'button.unsubscribe', function(e) {
         var name = $(this).data('name');
         return confirm('Are you sure you want to unsubscribe from "' + name + '"?');
-        /*
-        $.ajax({
-            url: $(this).data('href'),
-            type: 'POST',
-            dataType: 'json',
-            data: JSON.stringify({action: 'unsubscribe'}),
-            headers: {'X-CSRFToken': getCookie('csrftoken')},
-            success: function(data) {
-                reader_reset();
-            }
-        });
-        return false;
-        */
     });
 
     $('body').on('submit', '#search-form', function(e) {

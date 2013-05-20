@@ -72,12 +72,13 @@ ul.scroll-list li a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 350px;
 }
 ul.scroll-list li.unread a { font-weight: bold; color: #000; }
 ul.scroll-list li.selected { background-color: #444; }
 ul.scroll-list li.selected a { color: #fff; }
 
-span.time { float: right; color: #999; font-size: 11px; margin: 2px 0px 0px 5px; }
+span.time { float: right; color: #999; font-size: 11px; margin: 2px 10px 0px 5px; line-height: 34px; }
 span.story-info { float: left; width: 90%; margin-top: 3px; font-size: 80%; color: #999; margin-left: 22px; }
 div.story-info { margin-bottom: 15px; font-style: italic; }
 
