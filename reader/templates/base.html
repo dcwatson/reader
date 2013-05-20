@@ -22,6 +22,13 @@
     <body>
         <div class="mobile-prompt">You probably want the <a href="/feeds/">mobile site</a>.</div>
         <h1><a href="{% url "index" %}"><i class="icon-inbox"></i> {{ site.name }}</a></h1>
+        {% if user.is_authenticated %}
+        <div class="user">
+            <i class="icon-user"></i>
+            {{ user }}
+            | <a href="{% url "logout" %}">log out</a>
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         {% compress js %}

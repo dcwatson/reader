@@ -9,6 +9,14 @@ body {
 h1 { margin: 0px; padding: 10px 20px; font-size: 24px; }
 h1 a { color: #777; text-decoration: none; }
 
+div.user {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #777;
+}
+div.user a { color: #777; }
+
 .column {
     position: absolute;
     top: 54px;
