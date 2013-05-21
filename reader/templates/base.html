@@ -26,6 +26,8 @@
         <div class="user">
             <i class="icon-user"></i>
             {{ user }}
+            | {% if is_2panel %}<strong>2 panel</strong>{% else %}<a href="{% url "index" %}?2panel">2 panel</a>{% endif %}
+            | {% if is_2panel %}<a href="{% url "index" %}">3 panel</a>{% else %}<strong>3 panel</strong>{% endif %}
             | <a href="{% url "logout" %}">log out</a>
         </div>
         {% endif %}

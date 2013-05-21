@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div id="feeds" class="column feeds autoload" data-autoload-url="{% url "feeds" %}">
-</div>
+{% block css %}
+<style>
+    #stories { left: 20px; width: 400px; }
+    #story { left: 440px; right: 20px; }
+</style>
+{% endblock %}
 
-<div id="stories" class="column">
+{% block content %}
+<div id="stories" class="column autoload" data-autoload-url="{% url "unread" %}">
 </div>
 
 <div id="story" class="column">

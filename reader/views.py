@@ -16,7 +16,9 @@ import json
 
 @login_required
 def index(request):
-    return render(request, 'reader/index.html', {
+    template_name = 'index_2panel.html' if '2panel' in request.GET else 'index.html'
+    return render(request, 'reader/%s' % template_name, {
+        'is_2panel': '2panel' in request.GET,
     })
 
 def login(request):

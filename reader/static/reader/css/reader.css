@@ -24,11 +24,11 @@ div.user a { color: #777; }
     background-color: #fff;
 }
 
-#feeds { left: 20px; width: 300px; }
-#stories { left: 340px; width: 400px; }
-#story { left: 760px; right: 20px; }
+#feeds { left: 20px; width: 250px; }
+#stories { left: 290px; width: 400px; }
+#story { left: 710px; right: 20px; }
 
-@media all and (max-width: 1280px) and (min-width: 500px) {
+@media all and (max-width: 1100px) and (min-width: 500px) {
     #feeds { left: 2%; width: 47%; height: 300px; }
     #stories { left: 51%; width: 47%; height: 300px; }
     #story { top: 374px; left: 2%; right: 2%; bottom: 20px; }

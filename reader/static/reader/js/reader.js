@@ -76,7 +76,10 @@ function reader_reset() {
 }
 
 $(function() {
-    load_column('#feeds', '/feeds/');
+    $('.autoload').each(function(idx, elem) {
+        var url = $(elem).data('autoload-url');
+        load_column(elem, url);
+    });
 
     $('body').on('click', 'a.ajax', function(e) {
         $('li.selected', $(this).parent().parent()).removeClass('selected');

@@ -67,6 +67,9 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         from haystack.query import SearchQuerySet
         sqs = SearchQuerySet().models(Story).filter(content=query, feed_id__in=[feed.pk for feed in feeds]).order_by('-date_published')
         story_ids = [r.pk for r in sqs]
+        if not story_ids:
+            # Save ourselves the following query if we know nothing will come back.
+            return Story.objects.none()
     sql = """
         SELECT
             s.*,
@@ -85,7 +88,7 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         %(limit)s
     """
     where = []
-    if story_ids is not None:
+    if story_ids:
         where.append('s.id IN (%s)' % ', '.join([str(pk) for pk in story_ids]))
     if read is not None:
         if read:
@@ -98,7 +101,7 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         else:
             where.append('(rs.is_starred = false OR rs.is_starred IS NULL)')
     if since is not None:
-        where.append("s.date_published::date > '%s'" % since.strftime('%Y-%m-%d'))
+        where.append("s.date_published::date > '%s'::date" % since.strftime('%Y-%m-%d'))
     params = {
         'user_id': user.pk,
         'feed_ids': ', '.join([str(f.pk) for f in feeds]),
