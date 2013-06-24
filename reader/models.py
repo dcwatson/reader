@@ -142,7 +142,7 @@ class SmartFeed (models.Model):
 class Story (models.Model):
     feed = models.ForeignKey(Feed, related_name='stories')
     ident = models.CharField(max_length=40, unique=True)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=300)
     author = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
     link = models.CharField(max_length=300, blank=True)
