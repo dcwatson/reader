@@ -89,7 +89,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'haystack',
     'reader',
-    'compressor',
     'tastypie',
     'south',
 )
@@ -137,12 +136,10 @@ LOGGING = {
     }
 }
 
-COMPRESS_ENABLED = True
-
 READER_TOKEN_EXPIRE = 24 # Expire login tokens after 2 hours.
 READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
 
 try:
-    from local_settings import *
-except:
-    pass
+    from .local_settings import *
+except Exception as ex:
+    print(str(ex))

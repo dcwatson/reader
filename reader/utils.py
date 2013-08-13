@@ -1,10 +1,11 @@
 from django.utils import timezone
 from django.contrib.sites.models import Site
+from django.db import connections
 from reader.models import Feed, Story, ReadStory
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import feedparser
 import requests
-import urlparse
+import urllib.parse as urlparse
 import datetime
 import logging
 import hashlib
@@ -59,7 +60,7 @@ def get_story_identifier(feed, data):
         bits.append(data['link'])
     if 'id' in data:
         bits.append(data['id'])
-    return hashlib.sha1('\n'.join(bits)).hexdigest()
+    return hashlib.sha1('\n'.join(bits).encode('utf-8')).hexdigest()
 
 def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
     story_ids = None
@@ -74,12 +75,12 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         SELECT
             s.*,
             rs.id AS "readstory_id",
-            coalesce(rs.is_read, false) AS "is_read",
-            coalesce(rs.is_starred, false) AS "is_starred",
+            coalesce(rs.is_read, %%s) AS "is_read",
+            coalesce(rs.is_starred, %%s) AS "is_starred",
             coalesce(rs.notes, '') AS "notes"
         FROM
             reader_story s
-            LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
+            LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %%s
         WHERE
             s.feed_id IN (%(feed_ids)s)
             %(where)s
@@ -88,27 +89,33 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
         %(limit)s
     """
     where = []
+    params = [False, False, user.pk]
     if story_ids:
-        where.append('s.id IN (%s)' % ', '.join([str(pk) for pk in story_ids]))
+        where.append('s.id IN (%s)')
+        params.append(', '.join([str(pk) for pk in story_ids]))
     if read is not None:
         if read:
-            where.append('rs.is_read = true')
+            where.append('rs.is_read = %s')
+            params.append(True)
         else:
-            where.append('(rs.is_read = false OR rs.is_read IS NULL)')
+            where.append('(rs.is_read = %s OR rs.is_read IS NULL)')
+            params.append(False)
     if starred is not None:
         if starred:
-            where.append('rs.is_starred = true')
+            where.append('rs.is_starred = %s')
+            params.append(True)
         else:
-            where.append('(rs.is_starred = false OR rs.is_starred IS NULL)')
+            where.append('(rs.is_starred = %s OR rs.is_starred IS NULL)')
+            params.append(False)
     if since is not None:
-        where.append("s.date_published::date > '%s'::date" % since.strftime('%Y-%m-%d'))
-    params = {
-        'user_id': user.pk,
+        where.append('s.date_published > %s')
+        params.append(since)
+    sql = sql % {
         'feed_ids': ', '.join([str(f.pk) for f in feeds]),
         'where': 'AND %s' % ' AND '.join(where) if where else '',
         'limit': 'LIMIT %s' % limit if limit else '',
     }
-    return Story.objects.raw(sql % params)
+    return Story.objects.raw(sql, params)
 
 def ajaxify(model, fields=None, extra=None):
     if fields is None:

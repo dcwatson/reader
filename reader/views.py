@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.encoding import smart_text
 from django.http import HttpResponse
 from django.conf import settings
 from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory, SmartFeed
@@ -64,12 +65,13 @@ def feeds(request):
             feed = create_feed(url)
             feed.subscriptions.create(user=request.user)
         return redirect('index')
+    false_value = 0 if 'sqlite' in settings.DATABASES['default']['ENGINE'] else 'false'
     count_sql = """
         SELECT count(s.id)
         FROM reader_story s
         LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
-        WHERE s.feed_id = reader_feed.id AND (rs.is_read = false OR rs.is_read IS NULL)
-    """ % {'user_id': request.user.pk}
+        WHERE s.feed_id = reader_feed.id AND (rs.is_read = %(false)s OR rs.is_read IS NULL)
+    """ % {'user_id': request.user.pk, 'false': false_value}
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/feeds.html' % f, {
         'smart_feeds': request.user.smart_feeds.all(),
@@ -103,7 +105,7 @@ def feed(request, feed_id):
     stories = sorted(itertools.chain(unread, last_read), key=operator.attrgetter('date_published'), reverse=True)
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
-        'title': unicode(feed),
+        'title': smart_text(feed),
         'feed': feed,
         'stories': stories,
     })
@@ -204,7 +206,7 @@ def smart_feed(request, feed_id):
     search_feeds = Feed.objects.filter(subscriptions__user=request.user)
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
-        'title': unicode(feed),
+        'title': smart_text(feed),
         'feed': feed,
         'stories': get_stories(search_feeds, request.user, query=feed.query),
         'extra_info': True,

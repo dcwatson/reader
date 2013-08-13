@@ -9,4 +9,4 @@ class Command (BaseCommand):
             root = drill.parse(filename)
             for e in root.find('//outline'):
                 feed = create_feed(e['xmlUrl'].strip())
-                print 'Imported', feed.url
+                print('Imported %s' % feed.url)
