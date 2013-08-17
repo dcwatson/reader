@@ -109,7 +109,7 @@ class LoginToken (models.Model):
 class Feed (models.Model):
     url = models.CharField(max_length=300, unique=True)
     title = models.CharField(max_length=200, blank=True)
-    subtitle = models.CharField(max_length=200, blank=True)
+    subtitle = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=FEED_STATUS_CHOICES, default='new')
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(null=True, blank=True)
