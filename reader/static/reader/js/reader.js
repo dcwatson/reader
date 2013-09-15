@@ -88,6 +88,10 @@ $(function() {
         return false;
     });
 
+    $('body').on('click', 'div.story a', function(e) {
+        $(this).attr('target', '_blank');
+    });
+
     $('body').on('click', 'a.add-feed', function(e) {
         $('#fade').show();
         $('#dialog').show();
