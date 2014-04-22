@@ -9,16 +9,15 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'reader',
-        'USER': 'reader',
+        'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': 5432,
+        'CONN_MAX_AGE': 600,
     }
 }
 
@@ -32,33 +31,15 @@ USE_L10N = True
 USE_TZ = True
 DEFAULT_FROM_EMAIL = 'root@localhost'
 
-MEDIA_ROOT = ''
-MEDIA_URL = ''
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+
 LOGIN_URL = '/login/'
-
-STATICFILES_DIRS = (
-)
-
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-)
 
 SECRET_KEY = 'vx&62u*!d%t#6c8764r20e5#(tze0*$31z1^eur@&w0%yn6^8t'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
@@ -66,19 +47,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'reader.urls'
-
 WSGI_APPLICATION = 'reader.wsgi.application'
-
-TEMPLATE_DIRS = (
-)
 
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
@@ -87,11 +64,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'haystack',
+    'pipeline',
     'reader',
-    'compressor',
-    'tastypie',
-    'south',
 )
 
 if DEBUG:
@@ -100,15 +74,6 @@ if DEBUG:
 AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
 )
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'reader',
-    },
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 SESSION_COOKIE_NAME = 'reader-session'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4 # 4 weeks in seconds
@@ -126,7 +91,12 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'reader.log'),
+        },
     },
     'loggers': {
         'django.request': {
@@ -134,13 +104,40 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'reader': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        }
     }
 }
 
-COMPRESS_ENABLED = True
-
-READER_TOKEN_EXPIRE = 24 # Expire login tokens after 2 hours.
+READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
 READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
+
+# Pipeline
+
+PIPELINE_CSS_COMPRESSOR = None
+PIPELINE_JS_COMPRESSOR = None
+
+PIPELINE_CSS = {
+    'reader': {
+        'source_filenames': (
+            'reader/css/font-awesome.css',
+            'reader/css/reader.css',
+        ),
+        'output_filename': 'reader.css',
+    },
+}
+
+PIPELINE_JS = {
+    'reader': {
+        'source_filenames': (
+            'reader/js/spin.js',
+            'reader/js/reader.js',
+        ),
+        'output_filename': 'reader.js',
+    }
+}
 
 try:
     from local_settings import *

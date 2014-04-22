@@ -1,26 +1,26 @@
 <div class="column-header">
     <div class="column-actions">
-        <a class="add-feed" href=""><i class="icon-plus"></i></a>
-        <a class="ajax" data-target="#feeds" href="{% url "feeds" %}"><i class="icon-refresh"></i></a>
+        <a class="add-feed" href=""><i class="fa fa-plus"></i></a>
+        <a class="ajax" data-target="#feeds" href="{% url "feeds" %}"><i class="fa fa-refresh"></i></a>
     </div>
     Feeds
 </div>
 <ul class="scroll-list feeds">
     <li>
         <a class="feed ajax" data-target="#stories" href="{% url "unread" %}">
-            <i class="icon-check-empty"></i>
+            <i class="fa fa-check-empty"></i>
             All Unread
         </a>
     </li>
     <li>
         <a class="feed ajax" data-target="#stories" href="{% url "starred" %}">
-            <i class="icon-star"></i>
+            <i class="fa fa-star"></i>
             Starred
         </a>
     </li>
     <li>
         <a class="feed ajax" data-target="#stories" href="{% url "search" %}">
-            <i class="icon-search"></i>
+            <i class="fa fa-search"></i>
             Search
         </a>
     </li>
@@ -29,7 +29,7 @@
     {% for feed in smart_feeds %}
         <li>
             <a class="feed ajax" data-target="#stories" href="{% url "smart-feed" feed_id=feed.pk %}" title="{{ feed }}">
-                <i class="icon-globe"></i>
+                <i class="fa fa-globe"></i>
                 {{ feed }}
             </a>
         </li>
@@ -39,7 +39,7 @@
     {% for feed in feeds %}
         <li class="{{ feed.status }}{% if feed.unread_count %} unread{% endif %}">
             <a class="feed ajax" data-target="#stories" data-feed="{{ feed.pk }}" href="{% url "feed" feed_id=feed.pk %}" title="{{ feed }}">
-                <i class="icon-{% if feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
+                <i class="fa fa-{% if feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
                 {{ feed }}
                 (<span class="unread">{{ feed.unread_count|default:0 }}</span>)
             </a>

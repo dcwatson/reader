@@ -2,14 +2,16 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.conf import settings
 from reader.models import Feed
+from reader.utils import update_feed
 import multiprocessing
 
 def update(feed_id):
     """
     Worker function to fetch and update the feeds in a separate process.
     """
-    from django.core.management import call_command
-    call_command('update_feed', feed_id)
+    import django
+    django.setup()
+    update_feed(Feed.objects.get(pk=feed_id))
 
 class Command (BaseCommand):
     def handle(self, *args, **options):

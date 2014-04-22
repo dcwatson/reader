@@ -174,8 +174,10 @@ def update_feed(feed, info=None):
             new_url = normalize_url(info.href)
             if not Feed.objects.filter(url=new_url).exists():
                 feed.url = new_url
+                logger.debug('Normalized %s --> %s', info.href, new_url)
         elif info.status in (410,):
             feed.status = 'gone'
+            logger.debug('Feed %s is GONE', feed)
         feed.title = info['feed'].get('title', '').strip()
         feed.subtitle = info['feed'].get('subtitle', '').strip()
         for e in info.entries:
@@ -191,6 +193,7 @@ def update_feed(feed, info=None):
             story.date_published = get_story_date(e)
             story.save()
     else:
+        logger.debug('Error updating %s', feed)
         feed.status = 'error'
     feed.date_updated = timezone.now()
     feed.save()

@@ -107,14 +107,14 @@ div.scroll-content img { max-width: 100%; }
 .feeds li.error a { color: red !important; }
 .stories li.read a { color: #aaa; }
 
-.stories li a i:before { content: "\f096"; }
-.stories li.read a i:before { content: "\f046"; }
+.stories li a i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f096"; }
+.stories li.read a i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f046"; }
 
-a.starred i:before { content: "\f005"; }
-a.unstarred i:before { content: "\f006"; }
+a.starred i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f005"; }
+a.unstarred i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f006"; }
 
-a.read i:before { content: "\f046"; }
-a.unread i:before { content: "\f096"; }
+a.read i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f046"; }
+a.unread i:before { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; content: "\f096"; }
 
 #fade {
     position: fixed;

@@ -1,10 +1,7 @@
-{% load compress %}
-{% load staticfiles %}
+{% load static %}
+{% load compressed %}
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class=""> <!--<![endif]-->
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -13,18 +10,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" href="{% static "reader/favicon.ico" %}" />
         <link href="http://fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
-        {% compress css %}
-            <link rel="stylesheet" href="{% static "reader/css/font-awesome.min.css" %}" />
-            <link rel="stylesheet" href="{% static "reader/css/reader.css" %}" />
-            {% block css %}{% endblock %}
-        {% endcompress %}
+        {% compressed_css "reader" %}
+        {% block css %}{% endblock %}
     </head>
     <body>
         <div class="mobile-prompt">You probably want the <a href="/feeds/">mobile site</a>.</div>
-        <h1><a href="{% url "index" %}"><i class="icon-inbox"></i> {{ site.name }}</a></h1>
+        <h1><a href="{% url "index" %}"><i class="fa fa-inbox"></i> {{ site.name }}</a></h1>
         {% if user.is_authenticated %}
         <div class="user">
-            <i class="icon-user"></i>
+            <i class="fa fa-user"></i>
             {{ user }}
             | {% if is_2panel %}<strong>2 panel</strong>{% else %}<a href="{% url "index" %}?2panel">2 panel</a>{% endif %}
             | {% if is_2panel %}<a href="{% url "index" %}">3 panel</a>{% else %}<strong>3 panel</strong>{% endif %}
@@ -33,10 +27,7 @@
         {% endif %}
         {% block content %}{% endblock %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        {% compress js %}
-            <script src="{% static "reader/js/spin.min.js" %}"></script>
-            <script src="{% static "reader/js/reader.js" %}"></script>
-            {% block js %}{% endblock %}
-        {% endcompress %}
+        {% compressed_js "reader" %}
+        {% block js %}{% endblock %}
     </body>
 </html>

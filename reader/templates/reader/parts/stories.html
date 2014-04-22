@@ -1,12 +1,12 @@
 <div class="column-header">
     <div class="column-actions">
         {% if feed.pk %}
-        <a class="ajax" data-target="#story" href="{% url "feed-settings" feed_id=feed.pk %}"><i class="icon-cog"></i></a>
+        <a class="ajax" data-target="#story" href="{% url "feed-settings" feed_id=feed.pk %}"><i class="fa fa-cog"></i></a>
         {% endif %}
-        <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="icon-check"></i></a>
-        <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="icon-refresh"></i></a>
+        <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="fa fa-check"></i></a>
+        <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="fa fa-refresh"></i></a>
     </div>
-    {% if show_back %}<a class="back" href="{% url "feeds" %}"><i class="icon-arrow-left"></i></a>{% endif %}
+    {% if show_back %}<a class="back" href="{% url "feeds" %}"><i class="fa fa-arrow-left"></i></a>{% endif %}
     {% if search %}
         <form id="search-form" action="{% url "search" %}" method="get">
             <input type="search" name="q" value="{{ title }}" autofocus="autofocus" />
