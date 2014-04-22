@@ -64,12 +64,8 @@ def get_story_identifier(feed, data):
 def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
     story_ids = None
     if query:
-        from haystack.query import SearchQuerySet
-        sqs = SearchQuerySet().models(Story).filter(content=query, feed_id__in=[feed.pk for feed in feeds]).order_by('-date_published')
-        story_ids = [r.pk for r in sqs]
-        if not story_ids:
-            # Save ourselves the following query if we know nothing will come back.
-            return Story.objects.none()
+        # TODO: searching
+        return Story.objects.none()
     sql = """
         SELECT
             s.*,
@@ -183,7 +179,7 @@ def update_feed(feed, info=None):
         for e in info.entries:
             ident = get_story_identifier(feed, e)
             try:
-                story = Story.objects.get(feed=feed, ident=ident)
+                story = Story.objects.get(ident=ident)
             except Story.DoesNotExist:
                 story = Story(feed=feed, ident=ident)
             story.title = e.get('title', '').strip()
