@@ -33,6 +33,7 @@ DEFAULT_FROM_EMAIL = 'root@localhost'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 LOGIN_URL = '/login/'
 
