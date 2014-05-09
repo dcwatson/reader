@@ -14,7 +14,7 @@
 <script>
     $('li[data-story="{{ story.ident }}"]').addClass('read');
     {% if first_read %}
-    update_unread_count({{ story.feed.pk }});
+        $('body').trigger('update-unread', [{{ story.feed.pk }}]);
     {% endif %}
 </script>
 {% endif %}

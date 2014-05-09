@@ -81,6 +81,10 @@ $(function() {
         load_column(elem, url);
     });
 
+    $('body').on('update-unread', function(e, feed_id) {
+        update_unread_count(feed_id);
+    });
+
     $('body').on('click', 'a.ajax', function(e) {
         $('li.selected', $(this).parent().parent()).removeClass('selected');
         $(this).parent().addClass('selected');
