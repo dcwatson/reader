@@ -1,4 +1,4 @@
-from reader.models import LoginToken, User
+from .models import LoginToken
 
 class EmailTokenBackend (object):
 
@@ -10,6 +10,8 @@ class EmailTokenBackend (object):
             return None
 
     def get_user(self, user_id):
+        from django.contrib import auth
+        User = auth.get_user_model()
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:

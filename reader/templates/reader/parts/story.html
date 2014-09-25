@@ -3,7 +3,7 @@
         <a class="story-action {% if status.is_read %}read{% else %}unread{% endif %}" href="{{ story.get_absolute_url }}"><i class="icon-read-status"></i></a>
         <a class="story-action {% if status.is_starred %}starred{% else %}unstarred{% endif %}" href="{{ story.get_absolute_url }}"><i class="icon-star-status"></i></a>
     </div>
-    {% if show_back %}<a class="back" href="{{ story.feed.get_absolute_url }}"><i class="icon-arrow-left"></i></a>{% endif %}
+    {% if show_back %}<a class="back" href="{{ story.feed.get_absolute_url }}"><i class="fa fa-arrow-left"></i></a>{% endif %}
     <a class="column-title" href="{{ story.link }}" target="_blank">{{ story.title }}</a>
 </div>
 <div class="scroll-content story">

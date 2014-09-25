@@ -7,9 +7,9 @@ from django.utils import timezone
 from django.utils.encoding import smart_text
 from django.http import HttpResponse
 from django.conf import settings
-from reader.models import Feed, Story, User, UserManager, LoginToken, ReadStory, SmartFeed
-from reader.utils import get_stories, ajaxify, create_feed, mark_all_read
-from reader.forms import SettingsForm
+from .models import Feed, Story, LoginToken, ReadStory, SmartFeed
+from .utils import get_stories, ajaxify, create_feed, mark_all_read
+from .forms import SettingsForm
 import itertools
 import operator
 import datetime
@@ -23,6 +23,7 @@ def index(request):
     })
 
 def login(request):
+    User = auth.get_user_model()
     sent = None
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
@@ -86,7 +87,7 @@ def feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     subscription = get_object_or_404(feed.subscriptions, user=request.user)
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
         action = data.get('action', '').strip().lower()
         if action == 'read':
             mark_all_read([feed], request.user)
@@ -135,7 +136,7 @@ def feed_settings(request, feed_id):
 def story(request, ident):
     story = get_object_or_404(Story, ident=ident)
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
         action = data.get('action', '').strip().lower()
         if action in ('star', 'unstar'):
             status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
@@ -160,7 +161,7 @@ def story(request, ident):
 def unread(request):
     feeds = Feed.objects.filter(subscriptions__user=request.user)
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
         action = data.get('action', '').strip().lower()
         if action == 'read':
             mark_all_read(feeds, request.user)
@@ -176,7 +177,7 @@ def unread(request):
 def starred(request):
     feeds = Feed.objects.filter(subscriptions__user=request.user)
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
         action = data.get('action', '').strip().lower()
         if action == 'read':
             mark_all_read(feeds, request.user)

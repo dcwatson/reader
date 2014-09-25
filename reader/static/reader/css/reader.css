@@ -43,7 +43,7 @@ div.user a { color: #777; }
     box-shadow: 0px 1px 2px #ccc;
 }
 
-.column-header a.back { color: #000; margin-right: 10px; text-decoration: none; }
+.column-header a.back { color: #000; margin-right: 10px; text-decoration: none; float: left; }
 
 .column-actions { float: right; }
 .column-actions a { color: #000; margin-left: 10px; text-decoration: none; }

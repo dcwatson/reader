@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.hashers import make_password
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.utils import timezone
@@ -31,62 +29,6 @@ SHOW_READ_CHOICES = (
     (-50, '50 stories'),
 )
 
-class UserManager (BaseUserManager):
-
-    def create_user(self, email, **extra_fields):
-        if not email:
-            raise ValueError('Users must have an email address')
-        user = self.model(email=email.strip().lower(), **extra_fields)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, **extra_fields):
-        extra_fields.pop('is_admin', True)
-        return self.create_user(email, is_admin=True, **extra_fields)
-
-class User (AbstractBaseUser):
-    name = models.CharField(max_length=200, blank=True)
-    email = models.EmailField(_('email address'), unique=True)
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'email'
-
-    objects = UserManager()
-
-    def __unicode__(self):
-        return self.name or self.email
-
-    def get_full_name(self):
-        return self.name or self.email
-
-    def get_short_name(self):
-        return self.email
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
-
-    def create_token(self):
-        max_tries = 10
-        while max_tries:
-            try:
-                s = str(timezone.now()) + str(random.random())
-                token = hashlib.sha1(s.encode('utf-8')).hexdigest()
-                return self.login_tokens.create(token=token)
-            except:
-                max_tries -= 1
-
-    def send_email(self, subject, message, from_email=None):
-        from django.core.mail import send_mail
-        send_mail(subject, message, from_email, [self.email])
-
 class NaturalKeyManager (models.Manager):
 
     def __init__(self, key_field):
@@ -97,7 +39,7 @@ class NaturalKeyManager (models.Manager):
         return self.get(**{self.key_field: key})
 
 class LoginToken (models.Model):
-    user = models.ForeignKey(User, related_name='login_tokens')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='login_tokens')
     token = models.CharField(max_length=40)
     date_created = models.DateTimeField(default=timezone.now)
 
@@ -117,7 +59,7 @@ class Feed (models.Model):
 
     objects = NaturalKeyManager('url')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or self.url
 
     def natural_key(self):
@@ -134,7 +76,7 @@ class SmartFeed (models.Model):
     starred = models.NullBooleanField()
     limit = models.IntegerField(default=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):
@@ -154,7 +96,7 @@ class Story (models.Model):
     class Meta:
         verbose_name_plural = _('stories')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def natural_key(self):

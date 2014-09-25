@@ -26,7 +26,7 @@ DATABASES = {
 ALLOWED_HOSTS = ['*']
 TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
-AUTH_USER_MODEL = 'reader.User'
+AUTH_USER_MODEL = 'users.User'
 SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'pipeline',
+    'reader.users',
     'reader',
 )
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from reader.models import Feed, Story, User, Subscription, ReadStory, SmartFeed
+from reader.models import Feed, Story, Subscription, ReadStory, SmartFeed
 
 class FeedAdmin (admin.ModelAdmin):
     list_display = ('url', 'title', 'subtitle', 'status', 'date_created', 'date_updated')
@@ -7,10 +7,6 @@ class FeedAdmin (admin.ModelAdmin):
 
 class StoryAdmin (admin.ModelAdmin):
     list_display = ('title', 'feed', 'author', 'link', 'date_published')
-
-class UserAdmin (admin.ModelAdmin):
-    list_display = ('email', 'name', 'is_active', 'is_admin', 'last_login')
-    list_filter = ('is_active', 'is_admin')
 
 class SubscriptionAdmin (admin.ModelAdmin):
     list_display = ('feed', 'user', 'show_read', 'date_subscribed')
@@ -26,7 +22,6 @@ class SmartFeedAdmin (admin.ModelAdmin):
 
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Story, StoryAdmin)
-admin.site.register(User, UserAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(ReadStory, ReadStoryAdmin)
 admin.site.register(SmartFeed, SmartFeedAdmin)
