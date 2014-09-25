@@ -52,7 +52,8 @@ div.user a { color: #777; }
 
 .mobile-prompt { display: none; }
 @media all and (max-width: 480px) {
-    .mobile-prompt { display: block; text-align: center; padding: 10px; font-size: 16px; background-color: #ffa; }
+    .mobile-prompt { display: block; text-align: center; padding: 10px; font-size: 16px; background-color: #ffa;
+        position: absolute; z-index: 1000; width: 100%; }
     .column-title { max-width: 65%; }
 }
 
