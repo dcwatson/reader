@@ -6,4 +6,4 @@ class Command (BaseCommand):
     def handle(self, *args, **options):
         for url in args:
             feed = create_feed(url)
-            print 'Added', feed.url
+            print('Added %s' % feed.url)

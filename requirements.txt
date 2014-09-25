@@ -1,4 +1,4 @@
-BeautifulSoup
+BeautifulSoup4
 Django>=1.7
 django-pipeline
 drill

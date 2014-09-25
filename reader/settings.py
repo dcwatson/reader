@@ -1,3 +1,4 @@
+import getpass
 import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -13,11 +14,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'reader',
-        'USER': 'postgres',
+        'USER': getpass.getuser(),
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': 5432,
         'CONN_MAX_AGE': 600,
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -141,6 +143,6 @@ PIPELINE_JS = {
 }
 
 try:
-    from local_settings import *
-except:
-    pass
+    from .local_settings import *
+except Exception as ex:
+    print(str(ex))

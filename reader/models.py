@@ -77,9 +77,10 @@ class User (AbstractBaseUser):
         max_tries = 10
         while max_tries:
             try:
-                token = hashlib.sha1(str(timezone.now()) + str(random.random())).hexdigest()
+                s = str(timezone.now()) + str(random.random())
+                token = hashlib.sha1(s.encode('utf-8')).hexdigest()
                 return self.login_tokens.create(token=token)
-            except Exception, ex:
+            except:
                 max_tries -= 1
 
     def send_email(self, subject, message, from_email=None):

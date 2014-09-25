@@ -1,4 +1,3 @@
-{% load compress %}
 {% load staticfiles %}
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -12,17 +11,13 @@
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link href="http://fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
-        {% compress css %}
-            <link rel="stylesheet" href="{% static "reader/css/font-awesome.min.css" %}" />
-            <link rel="stylesheet" href="{% static "reader/css/reader.css" %}" />
-            <style>body { background-color: #fff; font-size: 16px; }</style>
-            {% block css %}{% endblock %}
-        {% endcompress %}
+        <link rel="stylesheet" href="{% static "reader/css/font-awesome.min.css" %}" />
+        <link rel="stylesheet" href="{% static "reader/css/reader.css" %}" />
+        <style>body { background-color: #fff; font-size: 16px; }</style>
+        {% block css %}{% endblock %}
     </head>
     <body>
         {% block content %}{% endblock %}
-        {% compress js %}
-            {% block js %}{% endblock %}
-        {% endcompress %}
+        {% block js %}{% endblock %}
     </body>
 </html>
