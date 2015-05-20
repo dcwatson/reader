@@ -1,5 +1,5 @@
 BeautifulSoup4
-Django>=1.7
+Django>=1.8
 django-pipeline
 drill
 feedparser

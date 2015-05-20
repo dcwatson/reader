@@ -1,4 +1,4 @@
-{% load compressed %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -8,7 +8,7 @@
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link href="http://fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
-        {% compressed_css "reader" %}
+        {% stylesheet "reader" %}
         <style>body { background-color: #fff; font-size: 16px; }</style>
         {% block css %}{% endblock %}
     </head>

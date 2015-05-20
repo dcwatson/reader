@@ -1,5 +1,5 @@
 {% load static %}
-{% load compressed %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" href="{% static "reader/favicon.ico" %}" />
         <link href="http://fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
-        {% compressed_css "reader" %}
+        {% stylesheet "reader" %}
         {% block css %}{% endblock %}
     </head>
     <body>
@@ -27,7 +27,7 @@
         {% endif %}
         {% block content %}{% endblock %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        {% compressed_js "reader" %}
+        {% javascript "reader" %}
         {% block js %}{% endblock %}
     </body>
 </html>

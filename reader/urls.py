@@ -3,7 +3,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = (
     url(r'^$', 'reader.views.index', name='index'),
 
     url(r'^login/$', 'reader.views.login', name='login'),
