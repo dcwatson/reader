@@ -29,7 +29,7 @@ USE_L10N = True
 USE_TZ = True
 DEFAULT_FROM_EMAIL = 'root@localhost'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
