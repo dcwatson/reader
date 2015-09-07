@@ -27,7 +27,7 @@ def login(request):
     sent = None
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
-        user, created = User.objects.get_or_create(email=email)
+        user, created = User.objects.get_or_create(email=email, last_login=timezone.now())
         if User.objects.count() == 1:
             user.is_admin = True
             user.save()
