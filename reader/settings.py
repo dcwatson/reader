@@ -69,8 +69,8 @@ INSTALLED_APPS = (
     'reader',
 )
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#if DEBUG:
+#    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
