@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.conf import settings
+from django.utils.encoding import python_2_unicode_compatible
 import hashlib
 import random
 
@@ -49,6 +50,7 @@ class LoginToken (models.Model):
     def get_absolute_url(self):
         return '/login/%s/%s/' % (self.user_id, self.token)
 
+@python_2_unicode_compatible
 class Feed (models.Model):
     url = models.CharField(max_length=300, unique=True)
     title = models.CharField(max_length=200, blank=True)
@@ -68,6 +70,7 @@ class Feed (models.Model):
     def get_absolute_url(self):
         return reverse('feed', kwargs={'feed_id': self.pk})
 
+@python_2_unicode_compatible
 class SmartFeed (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='smart_feeds')
     title = models.CharField(max_length=100, blank=True)
@@ -82,6 +85,7 @@ class SmartFeed (models.Model):
     def get_absolute_url(self):
         return reverse('smart-feed', kwargs={'feed_id': self.pk})
 
+@python_2_unicode_compatible
 class Story (models.Model):
     feed = models.ForeignKey(Feed, related_name='stories')
     ident = models.CharField(max_length=40, unique=True)

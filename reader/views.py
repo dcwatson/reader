@@ -8,7 +8,7 @@ from django.utils.encoding import smart_text
 from django.http import HttpResponse
 from django.conf import settings
 from .models import Feed, Story, LoginToken, ReadStory, SmartFeed
-from .utils import get_stories, ajaxify, create_feed, mark_all_read
+from .utils import get_stories, ajaxify, create_feed, mark_all_read, update_feed
 from .forms import SettingsForm
 import itertools
 import operator
@@ -95,6 +95,10 @@ def feed(request, feed_id):
             feed.subscriptions.filter(user=request.user).delete()
             ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
+    elif 'reload' in request.GET:
+        # Only allow re-downloads every 15 minutes.
+        if timezone.now() >= feed.date_updated + datetime.timedelta(minutes=15):
+            update_feed(feed)
     unread = get_stories([feed], request.user, read=False)
     if subscription.show_read > 0:
         since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)

@@ -4,6 +4,7 @@
         <a class="ajax" data-target="#story" href="{% url "feed-settings" feed_id=feed.pk %}"><i class="fa fa-cog"></i></a>
         {% endif %}
         <a class="all-read" data-feed="{{ feed.pk }}" href="{{ request_path }}"><i class="fa fa-check"></i></a>
+        <a class="ajax" data-target="#stories" href="{{ request_path }}" data-reload="1"><i class="fa fa-download"></i></a>
         <a class="ajax" data-target="#stories" href="{{ request_path }}"><i class="fa fa-refresh"></i></a>
     </div>
     {% if show_back %}<a class="back" href="{% url "feeds" %}"><i class="fa fa-arrow-left"></i></a>{% endif %}

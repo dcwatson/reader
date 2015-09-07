@@ -31,11 +31,12 @@ function update_document_title() {
     $(document).attr('title', title);
 }
 
-function load_column(col_sel, url) {
+function load_column(col_sel, url, data) {
     var c = $(col_sel).empty();
     spinner.spin(c[0]);
     $.ajax({
         url: url,
+        data: data || {},
         success: function(html) {
             $('#story').empty();
             spinner.stop();
@@ -88,7 +89,8 @@ $(function() {
     $('body').on('click', 'a.ajax', function(e) {
         $('li.selected', $(this).parent().parent()).removeClass('selected');
         $(this).parent().addClass('selected');
-        load_column($(this).data('target'), $(this).attr('href'));
+        var data = $(this).data('reload') ? {reload: 1} : {};
+        load_column($(this).data('target'), $(this).attr('href'), data);
         return false;
     });
 
