@@ -34,7 +34,7 @@ nosetests.xml
 .pydevproject
 
 # reader
-*.db
+#*.db
 *.log
 /static/
 local_settings.py
