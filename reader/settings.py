@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Dan Watson', 'dcwatson@gmail.com'),
 )
 
 DATABASES = {
@@ -27,7 +27,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-DEFAULT_FROM_EMAIL = 'root@localhost'
+DEFAULT_FROM_EMAIL = 'reader@djreader.azurewebsites.net'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 STATIC_URL = '/static/'
