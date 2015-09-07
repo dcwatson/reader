@@ -3,5 +3,4 @@ Django>=1.8
 django-pipeline
 drill
 feedparser
-psycopg2>=2.4.5
 requests
