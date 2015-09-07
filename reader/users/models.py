@@ -17,7 +17,7 @@ class UserManager (BaseUserManager):
 
     def create_superuser(self, email, **extra_fields):
         extra_fields.pop('is_admin', True)
-        return self.create_user(email, is_admin=True, **extra_fields)
+        return self.create_user(email, is_admin=True, last_login=timezone.now(), **extra_fields)
 
 class User (AbstractBaseUser):
     name = models.CharField(max_length=200, blank=True)
