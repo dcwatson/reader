@@ -72,6 +72,10 @@ INSTALLED_APPS = (
 #if DEBUG:
 #    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+
 AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
 )
