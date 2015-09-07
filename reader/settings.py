@@ -12,12 +12,8 @@ ADMINS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'reader',
-        'USER': getpass.getuser(),
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'reader.db'),
         'CONN_MAX_AGE': 600,
         'ATOMIC_REQUESTS': True,
     }
