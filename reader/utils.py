@@ -1,11 +1,11 @@
 from django.utils import timezone
 from django.contrib.sites.models import Site
 from django.db import connections
+from django.utils.six.moves.urllib import parse as urlparse
 from reader.models import Feed, Story, ReadStory
 from bs4 import BeautifulSoup
 import feedparser
 import requests
-import urllib.parse as urlparse
 import datetime
 import logging
 import hashlib
