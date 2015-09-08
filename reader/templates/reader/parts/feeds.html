@@ -1,6 +1,6 @@
 <div class="column-header">
     <div class="column-actions">
-        <a class="add-feed" href=""><i class="fa fa-plus"></i></a>
+        <a class="add-feed" href="{% url "add-feed" %}"><i class="fa fa-plus"></i></a>
         <a class="ajax" data-target="#feeds" href="{% url "feeds" %}"><i class="fa fa-refresh"></i></a>
     </div>
     Feeds
@@ -46,3 +46,4 @@
         </li>
     {% endfor %}
 </ul>
+{% include "analytics.html" %}

@@ -60,12 +60,6 @@ def logout(request):
 
 @login_required
 def feeds(request):
-    if request.method == 'POST':
-        url = request.POST.get('url', '').strip()
-        if url and not url.endswith('://'):
-            feed = create_feed(url)
-            feed.subscriptions.create(user=request.user)
-        return redirect('index')
     false_value = 0 if 'sqlite' in settings.DATABASES['default']['ENGINE'] else 'false'
     count_sql = """
         SELECT count(s.id)
@@ -83,6 +77,16 @@ def feeds(request):
     })
 
 @login_required
+def add_feed(request):
+    if request.method == 'POST':
+        url = request.POST.get('url', '').strip()
+        if url and not url.endswith('://'):
+            feed = create_feed(url)
+            feed.subscriptions.create(user=request.user)
+        return redirect('index')
+    return render(request, 'reader/mobile/add_feed.html', {})
+
+@login_required
 def feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     subscription = get_object_or_404(feed.subscriptions, user=request.user)
@@ -97,7 +101,7 @@ def feed(request, feed_id):
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
     elif 'reload' in request.GET:
         # Only allow re-downloads every 15 minutes.
-        if timezone.now() >= feed.date_updated + datetime.timedelta(minutes=15):
+        if not feed.date_updated or (timezone.now() >= feed.date_updated + datetime.timedelta(minutes=15)):
             update_feed(feed)
     unread = get_stories([feed], request.user, read=False)
     if subscription.show_read > 0:

@@ -13,7 +13,7 @@
 <div id="fade"></div>
 <div id="dialog">
     <div class="arrow"></div>
-    <form action="{% url "feeds" %}" method="post">
+    <form action="{% url "add-feed" %}" method="post">
         {% csrf_token %}
         Enter the URL of a website or RSS/Atom feed below:
         <input type="text" class="add-feed" name="url" value="http://" />

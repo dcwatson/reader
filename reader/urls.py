@@ -11,6 +11,8 @@ urlpatterns = (
     url(r'^logout/$', 'reader.views.logout', name='logout'),
 
     url(r'^feeds/$', 'reader.views.feeds', name='feeds'),
+    url(r'^feeds/add/$', 'reader.views.add_feed', name='add-feed'),
+
     url(r'^feed/(?P<feed_id>\d+)/$', 'reader.views.feed', name='feed'),
     url(r'^feed/(?P<feed_id>\d+)/settings/$', 'reader.views.feed_settings', name='feed-settings'),
     url(r'^story/(?P<ident>\w+)/$', 'reader.views.story', name='story'),

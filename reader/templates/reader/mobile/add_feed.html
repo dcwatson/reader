@@ -1,0 +1,21 @@
+{% extends "mobile.html" %}
+
+{% block content %}
+<div class="column-header">
+    <div class="column-actions">
+    </div>
+    <a class="back" href="{% url "index" %}"><i class="fa fa-arrow-left"></i></a>
+    Add Feed
+</div>
+<div class="scroll-content settings">
+    <form action="{% url "add-feed" %}" method="post">
+        {% csrf_token %}
+        <p>
+            Enter the URL of a website or RSS/Atom feed below:<br />
+            <input type="text" class="add-feed" name="url" value="http://" size="50" />
+        </p>
+        <input type="submit" value="Add Feed" />
+    </form>
+</div>
+{% include "analytics.html" %}
+{% endblock %}
