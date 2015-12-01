@@ -38,6 +38,7 @@ def login(request):
             'token': token,
             'site': Site.objects.get_current(),
             'expire_hours': settings.READER_TOKEN_EXPIRE,
+            'login_url': request.build_absolute_uri(token.get_absolute_url()),
         })
         user.send_email('Reader Login', message)
         sent = user.email

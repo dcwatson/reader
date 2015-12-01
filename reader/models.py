@@ -2,9 +2,16 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.conf import settings
 import hashlib
 import random
+import re
+
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 FEED_STATUS_CHOICES = (
     ('new', 'New'),
@@ -28,6 +35,9 @@ SHOW_READ_CHOICES = (
     (-25, '25 stories'),
     (-50, '50 stories'),
 )
+
+TAG_PATTERN = re.compile(r'<([a-z0-9]+)([^>]*)>', re.I)
+SRC_PATTERN = re.compile(r'(src|srcset|href)=["\']([^"\']+)["\']', re.I)
 
 class NaturalKeyManager (models.Manager):
 
@@ -104,6 +114,29 @@ class Story (models.Model):
 
     def get_absolute_url(self):
         return reverse('story', kwargs={'ident': self.ident})
+
+    def fixed_content(self):
+        def src_fixer(match):
+            name, value = match.groups()
+            if name.lower() == 'srcset':
+                parts = []
+                for v in value.split(','):
+                    # For each URL (and optional density) in the srcset, fix the URL part (and keep the density part).
+                    ss = v.strip().rsplit(None, 1)
+                    ss[0] = urlparse.urljoin(self.feed.url, ss[0])
+                    parts.append(' '.join(ss))
+                value = ', '.join(parts)
+            elif value.startswith('#'):
+                # Ideally anchors would work inline, but this is better than before.
+                value = urlparse.urljoin(self.link, value)
+            elif '://' not in value:
+                value = urlparse.urljoin(self.feed.url, value)
+            return '%s="%s"' % (name, value)
+        def tag_fixer(match):
+            tag, attrs = match.groups()
+            attrs = SRC_PATTERN.sub(src_fixer, attrs)
+            return '<%s%s>' % (tag, attrs)
+        return mark_safe(TAG_PATTERN.sub(tag_fixer, self.content))
 
 class Subscription (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
