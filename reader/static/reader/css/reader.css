@@ -103,7 +103,7 @@ div.scroll-content {
     -webkit-overflow-scrolling: touch;
 }
 div.scroll-content p { margin: 0px 0px 15px 0px; padding: 0px; }
-div.scroll-content img { max-width: 100%; }
+div.scroll-content img, div.scroll-content iframe { max-width: 100% !important; }
 
 .feeds li.error a { color: red !important; }
 .stories li.read a { color: #aaa; }
