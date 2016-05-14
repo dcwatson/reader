@@ -4,7 +4,6 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -41,13 +40,21 @@ LOGIN_URL = '/login/'
 
 SECRET_KEY = 'vx&62u*!d%t#6c8764r20e5#(tze0*$31z1^eur@&w0%yn6^8t'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'reader.utils.reader_context',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.static',
+                'django.contrib.messages.context_processors.messages',
+                'reader.utils.reader_context',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -121,27 +128,29 @@ READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating fe
 
 # Pipeline
 
-PIPELINE_CSS_COMPRESSOR = None
-PIPELINE_JS_COMPRESSOR = None
-
-PIPELINE_CSS = {
-    'reader': {
-        'source_filenames': (
-            'reader/css/font-awesome.css',
-            'reader/css/reader.css',
-        ),
-        'output_filename': 'reader.css',
+PIPELINE = {
+    'PIPELINE_ENABLED': False,
+    'JS_COMPRESSOR': None,
+    'CSS_COMPRESSOR': None,
+    'DISABLE_WRAPPER': True,
+    'JAVASCRIPT': {
+        'reader': {
+            'source_filenames': (
+                'reader/js/spin.js',
+                'reader/js/reader.js',
+            ),
+            'output_filename': 'reader.js',
+        },
     },
-}
-
-PIPELINE_JS = {
-    'reader': {
-        'source_filenames': (
-            'reader/js/spin.js',
-            'reader/js/reader.js',
-        ),
-        'output_filename': 'reader.js',
-    }
+    'STYLESHEETS': {
+        'reader': {
+            'source_filenames': (
+                'reader/css/font-awesome.css',
+                'reader/css/reader.css',
+            ),
+            'output_filename': 'reader.css',
+        },
+    },
 }
 
 try:
