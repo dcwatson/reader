@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.conf import settings
+from django.contrib.postgres.search import SearchVectorField
 import hashlib
 import random
 import re
@@ -100,6 +101,8 @@ class Story (models.Model):
     content = models.TextField(blank=True)
     link = models.CharField(max_length=300, blank=True)
     date_published = models.DateTimeField(default=timezone.now)
+
+    search = SearchVectorField(null=True)
 
     objects = NaturalKeyManager('ident')
 

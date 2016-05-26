@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.contrib.sites.models import Site
-from django.db import connections
+from django.db import connections, models
 from reader.models import Feed, Story, ReadStory
 from bs4 import BeautifulSoup
 import feedparser
@@ -65,8 +65,10 @@ def get_story_identifier(feed, data):
 def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
     story_ids = None
     if query:
-        # TODO: searching
-        return Story.objects.none()
+        # from django.contrib.postgres.search import SearchQuery, SearchRank
+        # sq = SearchQuery(query)
+        # return Story.objects.annotate(rank=SearchRank(models.F('search'), sq)).filter(search=sq).order_by('-rank')
+        return Story.objects.filter(search=query).order_by('-date_published')
     sql = """
         SELECT
             s.*,
