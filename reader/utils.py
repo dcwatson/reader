@@ -152,7 +152,7 @@ def fetch_feed(url):
             return feed
         # Otherwise, fetch the page and look for <link> elements.
         r = requests.get(url)
-        head = BeautifulSoup(r.text).find('head')
+        head = BeautifulSoup(r.text, "html.parser").find('head')
         for attrs in FEED_LINK_ATTRIBUTES:
             for link in head.findAll('link', dict(attrs)):
                 href = dict(link.attrs).get('href', '')
