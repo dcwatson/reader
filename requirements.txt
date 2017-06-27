@@ -1,7 +1,9 @@
+autopep8
 BeautifulSoup4
-Django>=1.8
+Django
 django-pipeline
 drill
 feedparser
-psycopg2>=2.4.5
+isort
+psycopg2
 requests

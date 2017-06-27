@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from reader.utils import create_feed
+from django.core.management.base import BaseCommand, CommandError
 import drill
+
+from reader.utils import create_feed
+
 
 class Command (BaseCommand):
     def handle(self, *args, **options):

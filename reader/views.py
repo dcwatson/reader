@@ -1,19 +1,22 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.sites.models import Site
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import smart_text
-from django.http import HttpResponse
-from django.conf import settings
-from .models import Feed, Story, LoginToken, ReadStory, SmartFeed
-from .utils import get_stories, ajaxify, create_feed, mark_all_read
+
 from .forms import SettingsForm
-import itertools
-import operator
+from .models import Feed, LoginToken, ReadStory, SmartFeed, Story
+from .utils import ajaxify, create_feed, get_stories, mark_all_read
+
 import datetime
+import itertools
 import json
+import operator
+
 
 @login_required
 def index(request):
@@ -21,6 +24,7 @@ def index(request):
     return render(request, 'reader/%s' % template_name, {
         'is_2panel': '2panel' in request.GET,
     })
+
 
 def login(request):
     User = auth.get_user_model()
@@ -46,6 +50,7 @@ def login(request):
         'sent': sent,
     })
 
+
 def email_login(request, user_id, token):
     # Wipe out any login tokens older than 2 hours.
     expire_date = timezone.now() - datetime.timedelta(hours=settings.READER_TOKEN_EXPIRE)
@@ -55,9 +60,11 @@ def email_login(request, user_id, token):
         auth.login(request, user)
     return redirect('index')
 
+
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
 
 @login_required
 def feeds(request):
@@ -82,6 +89,7 @@ def feeds(request):
             'title_lower': 'lower(reader_feed.title)',
         }, order_by=('title_lower',)),
     })
+
 
 @login_required
 def feed(request, feed_id):
@@ -112,6 +120,7 @@ def feed(request, feed_id):
         'stories': stories,
     })
 
+
 @login_required
 def feed_settings(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -132,6 +141,7 @@ def feed_settings(request, feed_id):
         'feed': feed,
         'form': form,
     })
+
 
 @login_required
 def story(request, ident):
@@ -158,6 +168,7 @@ def story(request, ident):
         'first_read': created,
     })
 
+
 @login_required
 def unread(request):
     feeds = Feed.objects.filter(subscriptions__user=request.user)
@@ -173,6 +184,7 @@ def unread(request):
         'stories': get_stories(feeds, request.user, read=False),
         'extra_info': True,
     })
+
 
 @login_required
 def starred(request):
@@ -190,6 +202,7 @@ def starred(request):
         'extra_info': True,
     })
 
+
 @login_required
 def search(request):
     feeds = Feed.objects.filter(subscriptions__user=request.user)
@@ -201,6 +214,7 @@ def search(request):
         'extra_info': True,
         'search': True,
     })
+
 
 @login_required
 def smart_feed(request, feed_id):

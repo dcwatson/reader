@@ -36,5 +36,6 @@ nosetests.xml
 # reader
 *.db
 *.log
+*.backup
 /static/
 local_settings.py

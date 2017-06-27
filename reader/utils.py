@@ -1,15 +1,18 @@
-from django.utils import timezone
+from bs4 import BeautifulSoup
 from django.contrib.sites.models import Site
 from django.db import connections, models
-from reader.models import Feed, Story, ReadStory
-from bs4 import BeautifulSoup
+from django.utils import timezone
 import feedparser
 import requests
-import urllib.parse as urlparse
+
+from reader.models import Feed, ReadStory, Story
+
 import datetime
-import logging
 import hashlib
+import logging
 import time
+import urllib.parse as urlparse
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +34,13 @@ FEED_LINK_ATTRIBUTES = (
     (('rel', 'alternate'), ('type', 'application/xml')),
 )
 
+
 def reader_context(request):
     return {
         'site': Site.objects.get_current(),
         'request_path': request.path,
     }
+
 
 def get_story_content(data):
     if 'content' in data:
@@ -44,12 +49,14 @@ def get_story_content(data):
         return data['summary'].strip()
     return u''
 
+
 def get_story_date(data):
     if 'published_parsed' in data:
         return datetime.datetime.fromtimestamp(time.mktime(data['published_parsed'])).replace(tzinfo=timezone.utc)
     elif 'updated_parsed' in data:
         return datetime.datetime.fromtimestamp(time.mktime(data['updated_parsed'])).replace(tzinfo=timezone.utc)
     return datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+
 
 def get_story_identifier(feed, data):
     bits = [
@@ -62,13 +69,14 @@ def get_story_identifier(feed, data):
         bits.append(data['id'])
     return hashlib.sha1('\n'.join(bits).encode('utf-8')).hexdigest()
 
+
 def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
     story_ids = None
     if query:
         # from django.contrib.postgres.search import SearchQuery, SearchRank
         # sq = SearchQuery(query)
         # return Story.objects.annotate(rank=SearchRank(models.F('search'), sq)).filter(search=sq).order_by('-rank')
-        return Story.objects.filter(search=query).order_by('-date_published')
+        return Story.objects.filter(feed__in=feeds, search=query).order_by('-date_published')
     sql = """
         SELECT
             s.*,
@@ -115,6 +123,7 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
     }
     return Story.objects.raw(sql, params)
 
+
 def ajaxify(model, fields=None, extra=None):
     if fields is None:
         fields = [f.name for f in model._meta.fields]
@@ -135,9 +144,11 @@ def ajaxify(model, fields=None, extra=None):
         data['reader_url'] = model.get_absolute_url()
     return data
 
+
 def normalize_url(url):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
     return urlparse.urlunsplit((scheme.lower(), netloc.lower(), path, query, fragment)).strip()
+
 
 def valid_feed(feed):
     if not feed.bozo:
@@ -145,6 +156,7 @@ def valid_feed(feed):
     if isinstance(feed.bozo_exception, feedparser.CharacterEncodingOverride):
         return True
     return False
+
 
 def fetch_feed(url):
     try:
@@ -168,6 +180,7 @@ def fetch_feed(url):
     except:
         logger.exception('Error finding feed link for "%s"', url)
         return None
+
 
 def update_feed(feed, info=None):
     if info is None:
@@ -203,6 +216,7 @@ def update_feed(feed, info=None):
     feed.date_updated = timezone.now()
     feed.save()
 
+
 def create_feed(url):
     url = normalize_url(url)
     try:
@@ -219,6 +233,7 @@ def create_feed(url):
             return feed
         else:
             return Feed.objects.create(url=url, status='error')
+
 
 def mark_all_read(feeds, user):
     """

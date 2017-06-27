@@ -1,6 +1,7 @@
 import getpass
 import os
 
+
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 DEBUG = True
@@ -90,7 +91,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SESSION_COOKIE_NAME = 'reader-session'
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4 # 4 weeks in seconds
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 weeks in seconds
 
 LOGGING = {
     'version': 1,
@@ -125,8 +126,8 @@ LOGGING = {
     }
 }
 
-READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
-READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
+READER_TOKEN_EXPIRE = 2  # Expire login tokens after 2 hours.
+READER_UPDATE_PROCESSES = 3  # Number of worker processes to use when updating feeds.
 
 # Pipeline
 
