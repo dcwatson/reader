@@ -73,10 +73,7 @@ def get_story_identifier(feed, data):
 def get_stories(feeds, user, read=None, starred=None, query=None, since=None, limit=None):
     story_ids = None
     if query:
-        # from django.contrib.postgres.search import SearchQuery, SearchRank
-        # sq = SearchQuery(query)
-        # return Story.objects.annotate(rank=SearchRank(models.F('search'), sq)).filter(search=sq).order_by('-rank')
-        return Story.objects.filter(feed__in=feeds, search=query).order_by('-date_published')
+        return Story.objects.filter(feed__in=feeds, search=query).order_by('-date_published')[:limit]
     sql = """
         SELECT
             s.*,

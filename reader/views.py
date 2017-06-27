@@ -210,7 +210,7 @@ def search(request):
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/stories.html' % f, {
         'title': query,
-        'stories': get_stories(feeds, request.user, query=query) if query else None,
+        'stories': get_stories(feeds, request.user, query=query, limit=100) if query else None,
         'extra_info': True,
         'search': True,
     })
