@@ -34,6 +34,7 @@ nosetests.xml
 .pydevproject
 
 # reader
+.DS_Store
 *.db
 *.log
 *.backup

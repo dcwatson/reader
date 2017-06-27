@@ -156,7 +156,7 @@ PIPELINE = {
     },
 }
 
-try:
-    from .local_settings import *
-except Exception as ex:
-    print(str(ex))
+local_settings_path = os.path.join(os.path.dirname(__file__), 'local_settings.py')
+if os.path.exists(local_settings_path):
+    with open(local_settings_path, 'r') as fp:
+        exec(fp.read())
