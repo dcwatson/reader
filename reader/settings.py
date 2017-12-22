@@ -13,11 +13,11 @@ ADMINS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'reader',
-        'USER': getpass.getuser(),
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'NAME': os.environ.get('READER_DB_NAME', 'reader'),
+        'USER': os.environ.get('READER_DB_USER', getpass.getuser()),
+        'PASSWORD': os.environ.get('READER_DB_PASS', ''),
+        'HOST': os.environ.get('READER_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('READER_DB_PORT', 5432),
         'CONN_MAX_AGE': 600,
         'ATOMIC_REQUESTS': True,
     }

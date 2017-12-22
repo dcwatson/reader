@@ -4,6 +4,7 @@ Django
 django-pipeline
 drill
 feedparser
+gunicorn
 isort
 psycopg2
 requests

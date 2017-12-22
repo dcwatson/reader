@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.postgres.search import SearchVectorField
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -54,7 +54,7 @@ class NaturalKeyManager (models.Manager):
 
 
 class LoginToken (models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='login_tokens')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='login_tokens', on_delete=models.CASCADE)
     token = models.CharField(max_length=40)
     date_created = models.DateTimeField(default=timezone.now)
 
@@ -86,7 +86,7 @@ class Feed (models.Model):
 
 
 class SmartFeed (models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='smart_feeds')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='smart_feeds', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=True)
     query = models.CharField(max_length=100, blank=True)
     read = models.NullBooleanField()
@@ -101,7 +101,7 @@ class SmartFeed (models.Model):
 
 
 class Story (models.Model):
-    feed = models.ForeignKey(Feed, related_name='stories')
+    feed = models.ForeignKey(Feed, related_name='stories', on_delete=models.CASCADE)
     ident = models.CharField(max_length=40, unique=True)
     title = models.CharField(max_length=300)
     author = models.CharField(max_length=200, blank=True)
@@ -151,8 +151,8 @@ class Story (models.Model):
 
 
 class Subscription (models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
-    feed = models.ForeignKey(Feed, related_name='subscriptions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions', on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, related_name='subscriptions', on_delete=models.CASCADE)
     show_read = models.IntegerField(_('show read stories back'), choices=SHOW_READ_CHOICES, default=7)
     date_subscribed = models.DateTimeField(default=timezone.now)
 
@@ -161,8 +161,8 @@ class Subscription (models.Model):
 
 
 class ReadStory (models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories')
-    story = models.ForeignKey(Story, related_name='read_stories')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories', on_delete=models.CASCADE)
+    story = models.ForeignKey(Story, related_name='read_stories', on_delete=models.CASCADE)
     is_read = models.BooleanField(default=True)
     is_starred = models.BooleanField(default=False)
     notes = models.TextField(blank=True)

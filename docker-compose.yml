@@ -1,33 +1,28 @@
-version: '2'
+version: "3"
+
+volumes:
+    pgdata:
+
 services:
     db:
-        image: postgres
+        image: postgres:alpine
         environment:
-            - POSTGRES_DB=reader
-    migrate:
-        build: .
-        image: reader_web
-        environment:
-            - READER_DB_HOST=db
-            - READER_DB_USER=postgres
-        command: migrate
+            POSTGRES_USER: reader
+            POSTGRES_PASSWORD: secret
+            POSTGRES_DB: reader
         volumes:
-            - .:/reader
-        links:
-            - db
-        depends_on:
-            - db
+            - pgdata:/var/lib/postgresql/data
     web:
-        image: reader_web
+        build: .
+        image: reader:latest
         environment:
-            - READER_DB_HOST=db
-            - READER_DB_USER=postgres
-        command: runserver 0.0.0.0:8000
+            READER_DB_HOST: db
+            READER_DB_USER: reader
+            READER_DB_PASS: secret
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/reader
         ports:
             - "8000:8000"
-        links:
-            - db
         depends_on:
-            - migrate
+            - db
