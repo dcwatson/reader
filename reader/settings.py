@@ -1,6 +1,7 @@
 import getpass
 import os
 
+
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 DEBUG = True
@@ -12,11 +13,11 @@ ADMINS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('READER_DB_NAME', 'reader'),
-        'USER': os.environ.get('READER_DB_USER', getpass.getuser()),
-        'PASSWORD': os.environ.get('READER_DB_PASS', ''),
-        'HOST': os.environ.get('READER_DB_HOST', 'localhost'),
-        'PORT': os.environ.get('READER_DB_PORT', 5432),
+        'NAME': 'reader',
+        'USER': getpass.getuser(),
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': 5432,
         'CONN_MAX_AGE': 600,
         'ATOMIC_REQUESTS': True,
     }
@@ -90,7 +91,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SESSION_COOKIE_NAME = 'reader-session'
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4 # 4 weeks in seconds
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 weeks in seconds
 
 LOGGING = {
     'version': 1,
@@ -125,8 +126,8 @@ LOGGING = {
     }
 }
 
-READER_TOKEN_EXPIRE = 2 # Expire login tokens after 2 hours.
-READER_UPDATE_PROCESSES = 3 # Number of worker processes to use when updating feeds.
+READER_TOKEN_EXPIRE = 2  # Expire login tokens after 2 hours.
+READER_UPDATE_PROCESSES = 3  # Number of worker processes to use when updating feeds.
 
 # Pipeline
 
@@ -155,7 +156,7 @@ PIPELINE = {
     },
 }
 
-try:
-    from .local_settings import *
-except Exception as ex:
-    pass
+local_settings_path = os.path.join(os.path.dirname(__file__), 'local_settings.py')
+if os.path.exists(local_settings_path):
+    with open(local_settings_path, 'r') as fp:
+        exec(fp.read())

@@ -1,13 +1,15 @@
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
-from django.utils import timezone
-from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.contrib.postgres.search import SearchVectorField
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils import timezone
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
+
 import hashlib
 import random
 import re
+
 
 try:
     import urlparse
@@ -40,6 +42,7 @@ SHOW_READ_CHOICES = (
 TAG_PATTERN = re.compile(r'<([a-z0-9]+)([^>]*)>', re.I)
 SRC_PATTERN = re.compile(r'(src|srcset|href)=["\']([^"\']+)["\']', re.I)
 
+
 class NaturalKeyManager (models.Manager):
 
     def __init__(self, key_field):
@@ -48,6 +51,7 @@ class NaturalKeyManager (models.Manager):
 
     def get_by_natural_key(self, key):
         return self.get(**{self.key_field: key})
+
 
 class LoginToken (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='login_tokens')
@@ -59,6 +63,7 @@ class LoginToken (models.Model):
 
     def get_absolute_url(self):
         return '/login/%s/%s/' % (self.user_id, self.token)
+
 
 class Feed (models.Model):
     url = models.CharField(max_length=300, unique=True)
@@ -79,6 +84,7 @@ class Feed (models.Model):
     def get_absolute_url(self):
         return reverse('feed', kwargs={'feed_id': self.pk})
 
+
 class SmartFeed (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='smart_feeds')
     title = models.CharField(max_length=100, blank=True)
@@ -92,6 +98,7 @@ class SmartFeed (models.Model):
 
     def get_absolute_url(self):
         return reverse('smart-feed', kwargs={'feed_id': self.pk})
+
 
 class Story (models.Model):
     feed = models.ForeignKey(Feed, related_name='stories')
@@ -135,11 +142,13 @@ class Story (models.Model):
             elif '://' not in value:
                 value = urlparse.urljoin(self.feed.url, value)
             return '%s="%s"' % (name, value)
+
         def tag_fixer(match):
             tag, attrs = match.groups()
             attrs = SRC_PATTERN.sub(src_fixer, attrs)
             return '<%s%s>' % (tag, attrs)
         return mark_safe(TAG_PATTERN.sub(tag_fixer, self.content))
+
 
 class Subscription (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscriptions')
@@ -149,6 +158,7 @@ class Subscription (models.Model):
 
     class Meta:
         unique_together = ('user', 'feed')
+
 
 class ReadStory (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories')

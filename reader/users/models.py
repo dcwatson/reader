@@ -1,10 +1,12 @@
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.mail import send_mail
+from django.db import IntegrityError, models
 from django.utils import timezone
-from django.db import models, IntegrityError
+from django.utils.translation import ugettext_lazy as _
+
 import hashlib
 import random
+
 
 class UserManager (BaseUserManager):
 
@@ -18,6 +20,7 @@ class UserManager (BaseUserManager):
     def create_superuser(self, email, **extra_fields):
         extra_fields.pop('is_admin', True)
         return self.create_user(email, is_admin=True, **extra_fields)
+
 
 class User (AbstractBaseUser):
     name = models.CharField(max_length=200, blank=True)

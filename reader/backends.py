@@ -1,5 +1,6 @@
 from .models import LoginToken
 
+
 class EmailTokenBackend (object):
 
     def authenticate(self, user_id=None, token=None):
