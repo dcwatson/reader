@@ -25,5 +25,5 @@ urlpatterns = (
 
     url(r'^search/$', views.search, name='search'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 )

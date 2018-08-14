@@ -5,5 +5,5 @@ django-pipeline
 drill
 feedparser
 isort
-psycopg2
+psycopg2-binary
 requests
