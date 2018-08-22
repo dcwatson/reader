@@ -55,7 +55,8 @@ def email_login(request, user_id, token):
     # Wipe out any login tokens older than 2 hours.
     expire_date = timezone.now() - datetime.timedelta(hours=settings.READER_TOKEN_EXPIRE)
     LoginToken.objects.filter(date_created__lt=expire_date).delete()
-    user = auth.authenticate(user_id=user_id, token=token)
+    user = auth.authenticate(request, user_id=user_id, token=token)
+    print(user)
     if user and user.is_active:
         auth.login(request, user)
     return redirect('index')

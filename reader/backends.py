@@ -3,7 +3,7 @@ from .models import LoginToken
 
 class EmailTokenBackend (object):
 
-    def authenticate(self, user_id=None, token=None):
+    def authenticate(self, request, user_id=None, token=None):
         try:
             token_obj = LoginToken.objects.get(user__pk=user_id, token=token)
             return token_obj.user
