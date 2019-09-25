@@ -6,8 +6,6 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-import hashlib
-import random
 import re
 
 
@@ -73,6 +71,8 @@ class Feed (models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(null=True, blank=True)
 
+    story_count = models.IntegerField(default=0)
+
     objects = NaturalKeyManager('url')
 
     def __str__(self):
@@ -83,6 +83,11 @@ class Feed (models.Model):
 
     def get_absolute_url(self):
         return reverse('feed', kwargs={'feed_id': self.pk})
+
+    def update_story_count(self):
+        qs = Feed.objects.filter(pk=self.pk).select_for_update()
+        self.story_count = self.stories.count()
+        qs.update(story_count=self.story_count)
 
 
 class SmartFeed (models.Model):
@@ -107,7 +112,7 @@ class Story (models.Model):
     author = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
     link = models.CharField(max_length=300, blank=True)
-    date_published = models.DateTimeField(default=timezone.now)
+    date_published = models.DateTimeField(default=timezone.now, db_index=True)
 
     search = SearchVectorField(null=True)
 
@@ -156,12 +161,20 @@ class Subscription (models.Model):
     show_read = models.IntegerField(_('show read stories back'), choices=SHOW_READ_CHOICES, default=7)
     date_subscribed = models.DateTimeField(default=timezone.now)
 
+    read_count = models.IntegerField(default=0)
+
     class Meta:
         unique_together = ('user', 'feed')
+
+    def update_read_count(self):
+        qs = Subscription.objects.filter(pk=self.pk).select_for_update()
+        self.read_count = ReadStory.objects.filter(user=self.user, feed=self.feed, is_read=True).count()
+        qs.update(read_count=self.read_count)
 
 
 class ReadStory (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='read_stories', on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, related_name='read_stories', on_delete=models.CASCADE)
     story = models.ForeignKey(Story, related_name='read_stories', on_delete=models.CASCADE)
     is_read = models.BooleanField(default=True)
     is_starred = models.BooleanField(default=False)

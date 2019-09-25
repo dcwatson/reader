@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from django.contrib.sites.models import Site
-from django.db import connections, models
 from django.utils import timezone
 import feedparser
 import requests
@@ -121,27 +120,6 @@ def get_stories(feeds, user, read=None, starred=None, query=None, since=None, li
     return Story.objects.raw(sql, params)
 
 
-def ajaxify(model, fields=None, extra=None):
-    if fields is None:
-        fields = [f.name for f in model._meta.fields]
-    if extra:
-        fields = list(fields) + list(extra)
-    data = {}
-    for field_name in fields:
-        obj = getattr(model, field_name, None)
-        if hasattr(obj, 'pk'):
-            data[field_name] = obj.pk
-        elif isinstance(obj, datetime.datetime):
-            data[field_name] = obj.isoformat()
-        elif callable(obj):
-            data[field_name] = obj()
-        else:
-            data[field_name] = obj
-    if hasattr(model, 'get_absolute_url'):
-        data['reader_url'] = model.get_absolute_url()
-    return data
-
-
 def normalize_url(url):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
     return urlparse.urlunsplit((scheme.lower(), netloc.lower(), path, query, fragment)).strip()
@@ -174,7 +152,7 @@ def fetch_feed(url):
                     feed = feedparser.parse(href)
                     if valid_feed(feed):
                         return feed
-    except:
+    except Exception:
         logger.exception('Error finding feed link for "%s"', url)
         return None
 
@@ -212,6 +190,7 @@ def update_feed(feed, info=None):
         feed.status = 'error'
     feed.date_updated = timezone.now()
     feed.save()
+    feed.update_story_count()
 
 
 def create_feed(url):
@@ -237,11 +216,17 @@ def mark_all_read(feeds, user):
     Marks all stories in the given feeds for the given user as read.
     """
     update_ids = set()
+    create = []
+    now = timezone.now()
     for s in get_stories(feeds, user, read=False):
         if s.readstory_id:
             # The ReadStory object already exists, no need to try to get/create it.
             update_ids.add(s.readstory_id)
         else:
-            ReadStory.objects.create(story=s, user=user)
+            create.append(ReadStory(story=s, user=user, feed_id=s.feed_id, date_read=now))
     if update_ids:
         ReadStory.objects.filter(pk__in=update_ids).update(is_read=True)
+    if create:
+        ReadStory.objects.bulk_create(create)
+    for sub in user.subscriptions.filter(feed__in=feeds):
+        sub.update_read_count()

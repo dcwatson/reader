@@ -36,12 +36,12 @@
     {% endfor %}
     {% endif %}
     <li class="section">Subscribed Feeds</li>
-    {% for feed in feeds %}
-        <li class="{{ feed.status }}{% if feed.unread_count %} unread{% endif %}">
-            <a class="feed ajax" data-target="#stories" data-feed="{{ feed.pk }}" href="{% url "feed" feed_id=feed.pk %}" title="{{ feed }}">
-                <i class="fa fa-{% if feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
-                {{ feed }}
-                (<span class="unread">{{ feed.unread_count|default:0 }}</span>)
+    {% for sub in subscriptions %}
+        <li class="{{ sub.feed.status }}{% if sub.unread_count %} unread{% endif %}">
+            <a class="feed ajax" data-target="#stories" data-feed="{{ sub.feed_id }}" href="{% url "feed" feed_id=sub.feed_id %}" title="{{ sub.feed }}">
+                <i class="fa fa-{% if sub.feed.status == "error" %}warning-sign{% else %}globe{% endif %}"></i>
+                {{ sub.feed }}
+                (<span class="unread">{{ sub.unread_count|default:0 }}</span>)
             </a>
         </li>
     {% endfor %}

@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.utils.encoding import smart_text
 
 from .forms import SettingsForm
-from .models import Feed, LoginToken, ReadStory, SmartFeed, Story
-from .utils import ajaxify, create_feed, get_stories, mark_all_read
+from .models import Feed, LoginToken, ReadStory, SmartFeed, Story, Subscription
+from .utils import create_feed, get_stories, mark_all_read
 
 import datetime
 import itertools
@@ -75,18 +75,11 @@ def feeds(request):
             feed = create_feed(url)
             feed.subscriptions.create(user=request.user)
         return redirect('index')
-    false_value = 0 if 'sqlite' in settings.DATABASES['default']['ENGINE'] else 'false'
-    count_sql = """
-        SELECT count(s.id)
-        FROM reader_story s
-        LEFT OUTER JOIN reader_readstory rs ON rs.story_id = s.id AND rs.user_id = %(user_id)s
-        WHERE s.feed_id = reader_feed.id AND (rs.is_read = %(false)s OR rs.is_read IS NULL)
-    """ % {'user_id': request.user.pk, 'false': false_value}
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/feeds.html' % f, {
         'smart_feeds': request.user.smart_feeds.all(),
-        'feeds': Feed.objects.filter(subscriptions__user=request.user).extra(select={
-            'unread_count': count_sql,
+        'subscriptions': Subscription.objects.filter(user=request.user).select_related('feed').extra(select={
+            'unread_count': 'reader_feed.story_count - reader_subscription.read_count',
             'title_lower': 'lower(reader_feed.title)',
         }, order_by=('title_lower',)),
     })
@@ -103,9 +96,11 @@ def feed(request, feed_id):
             mark_all_read([feed], request.user)
         elif action == 'unsubscribe':
             feed.subscriptions.filter(user=request.user).delete()
-            ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
+            ReadStory.objects.filter(user=request.user, feed=feed).delete()
         return HttpResponse(json.dumps({'action': action}), content_type='applcation/json')
-    unread = get_stories([feed], request.user, read=False)
+    # TODO: make this configurable? Limit how far back to look for unreads for performance reasons.
+    since = datetime.date.today() - datetime.timedelta(days=31)
+    unread = get_stories([feed], request.user, read=False, since=since)
     if subscription.show_read > 0:
         since = datetime.date.today() - datetime.timedelta(days=subscription.show_read)
         last_read = get_stories([feed], request.user, read=True, since=since)
@@ -129,7 +124,7 @@ def feed_settings(request, feed_id):
     if request.method == 'POST':
         if request.POST.get('action', '').strip().lower() == 'unsubscribe':
             subscription.delete()
-            ReadStory.objects.filter(user=request.user, story__feed=feed).delete()
+            ReadStory.objects.filter(user=request.user, feed=feed).delete()
         else:
             form = SettingsForm(request.POST, instance=subscription)
             if form.is_valid():
@@ -147,21 +142,26 @@ def feed_settings(request, feed_id):
 @login_required
 def story(request, ident):
     story = get_object_or_404(Story, ident=ident)
+    sub = request.user.subscriptions.filter(feed=story.feed).first()
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         action = data.get('action', '').strip().lower()
         if action in ('star', 'unstar'):
-            status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+            status, created = ReadStory.objects.get_or_create(story=story, feed=story.feed, user=request.user)
             status.is_starred = action == 'star'
             status.save()
         elif action in ('read', 'unread'):
-            status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+            status, created = ReadStory.objects.get_or_create(story=story, feed=story.feed, user=request.user)
             status.is_read = action == 'read'
             status.save()
+            if sub:
+                sub.update_read_count()
         return HttpResponse(json.dumps({'story': story.ident, 'action': action}), content_type='applcation/json')
-    status, created = ReadStory.objects.get_or_create(story=story, user=request.user)
+    status, created = ReadStory.objects.get_or_create(story=story, feed=story.feed, user=request.user)
     status.is_read = True
     status.save()
+    if sub:
+        sub.update_read_count()
     f = 'parts' if request.is_ajax() else 'mobile'
     return render(request, 'reader/%s/story.html' % f, {
         'story': story,

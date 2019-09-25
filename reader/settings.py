@@ -1,45 +1,55 @@
-import getpass
+import dj_database_url
+
+import binascii
 import os
 
 
-BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+def get_secret(name, default='', cast=str):
+    value = os.getenv(name.upper())
+    if value is not None:
+        return cast(value)
+    try:
+        with open('/etc/secrets/%s' % name.lower(), 'r') as f:
+            return cast(f.read().strip())
+    except FileNotFoundError:
+        return default
 
-DEBUG = True
+
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+SECRET_KEY = get_secret('SECRET_KEY', binascii.hexlify(os.urandom(32)).decode('ascii'))
+
+DEBUG = get_secret('DEBUG', 'true').lower() in ('true', '1')
+ALLOWED_HOSTS = get_secret('ALLOWED_HOSTS', '*').split(',')
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'reader',
-        'USER': getpass.getuser(),
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': 5432,
-        'CONN_MAX_AGE': 600,
-        'ATOMIC_REQUESTS': True,
-    }
+    'default': dj_database_url.config(default='postgres:///reader', conn_max_age=600),
 }
 
-ALLOWED_HOSTS = ['*']
-TIME_ZONE = 'America/New_York'
-LANGUAGE_CODE = 'en-us'
-AUTH_USER_MODEL = 'users.User'
-SITE_ID = 1
+DATABASES['default']['ATOMIC_REQUESTS'] = True
+
+TIME_ZONE = get_secret('TIME_ZONE', 'America/New_York')
+LANGUAGE_CODE = get_secret('LANGUAGE_CODE', 'en-us')
+
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-DEFAULT_FROM_EMAIL = 'root@localhost'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+SITE_ID = 1
 
+DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', 'root@localhost')
+EMAIL_BACKEND = get_secret('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend')
+
+STATIC_ROOT = get_secret('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
+STATIC_URL = get_secret('STATIC_URL', '/static/')
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = '/login/'
-
-SECRET_KEY = 'vx&62u*!d%t#6c8764r20e5#(tze0*$31z1^eur@&w0%yn6^8t'
 
 TEMPLATES = [
     {
@@ -59,6 +69,7 @@ TEMPLATES = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,9 +93,6 @@ INSTALLED_APPS = (
     'reader.users',
     'reader',
 )
-
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'reader.backends.EmailTokenBackend',
@@ -126,7 +134,7 @@ LOGGING = {
     }
 }
 
-READER_TOKEN_EXPIRE = 2  # Expire login tokens after 2 hours.
+READER_TOKEN_EXPIRE = get_secret('READER_TOKEN_EXPIRE', 2, cast=int)  # Expire login tokens after 2 hours.
 READER_UPDATE_PROCESSES = 3  # Number of worker processes to use when updating feeds.
 
 # Pipeline
@@ -155,8 +163,3 @@ PIPELINE = {
         },
     },
 }
-
-local_settings_path = os.path.join(os.path.dirname(__file__), 'local_settings.py')
-if os.path.exists(local_settings_path):
-    with open(local_settings_path, 'r') as fp:
-        exec(fp.read())
