@@ -16,7 +16,4 @@ class Migration(migrations.Migration):
             name='feed',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='read_stories', to='reader.Feed'),
         ),
-        migrations.RunSQL("""
-            UPDATE reader_readstory SET feed_id = s.feed_id FROM reader_story s WHERE story_id = s.id
-        """, reverse_sql=migrations.RunSQL.noop),
     ]

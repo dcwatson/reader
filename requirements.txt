@@ -1,14 +1,10 @@
-autopep8
 BeautifulSoup4
-celery
+celery[redis]
 Django
 dj-database-url
-django-pipeline
 drill
 feedparser
-flake8
 gunicorn
-isort
 psycopg2-binary
 requests
 whitenoise

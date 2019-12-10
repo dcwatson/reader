@@ -43,7 +43,7 @@ SRC_PATTERN = re.compile(r'(src|srcset|href)=["\']([^"\']+)["\']', re.I)
 
 class NaturalKeyManager (models.Manager):
 
-    def __init__(self, key_field):
+    def __init__(self, key_field='pk'):
         super(NaturalKeyManager, self).__init__()
         self.key_field = str(key_field)
 

@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reader', '0007_readstory_feed'),
+        ('reader', '0008_update_readstory_feed'),
     ]
 
     operations = [

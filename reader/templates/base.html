@@ -1,5 +1,5 @@
 {% load static %}
-{% load pipeline %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -8,26 +8,28 @@
         <title>{% block title %}Reader{% endblock %}</title>
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="shortcut icon" href="{% static "reader/favicon.ico" %}" />
+        <link rel="shortcut icon" href="{% static 'reader/favicon.ico' %}" />
         <link href="//fonts.googleapis.com/css?family=Oxygen:400,700" rel="stylesheet" type="text/css" />
-        {% stylesheet "reader" %}
+        <link href="{% static 'reader/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'reader/css/reader.css' %}" rel="stylesheet" type="text/css" />
         {% block css %}{% endblock %}
     </head>
     <body>
         <div class="mobile-prompt">You probably want the <a href="/feeds/">mobile site</a>.</div>
-        <h1><a href="{% url "index" %}"><i class="fa fa-inbox"></i> {{ site.name }}</a></h1>
+        <h1><a href="{% url 'index' %}"><i class="fa fa-inbox"></i> {{ site.name }}</a></h1>
         {% if user.is_authenticated %}
         <div class="user">
             <i class="fa fa-user"></i>
             {{ user }}
-            | {% if is_2panel %}<strong>2 panel</strong>{% else %}<a href="{% url "index" %}?2panel">2 panel</a>{% endif %}
-            | {% if is_2panel %}<a href="{% url "index" %}">3 panel</a>{% else %}<strong>3 panel</strong>{% endif %}
-            | <a href="{% url "logout" %}">log out</a>
+            | {% if is_2panel %}<strong>2 panel</strong>{% else %}<a href="{% url 'index' %}?2panel">2 panel</a>{% endif %}
+            | {% if is_2panel %}<a href="{% url 'index' %}">3 panel</a>{% else %}<strong>3 panel</strong>{% endif %}
+            | <a href="{% url 'logout' %}">log out</a>
         </div>
         {% endif %}
         {% block content %}{% endblock %}
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        {% javascript "reader" %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'reader/js/spin.js' %}"></script>
+        <script src="{% static 'reader/js/reader.js' %}"></script>
         {% block js %}{% endblock %}
     </body>
 </html>

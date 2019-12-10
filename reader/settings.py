@@ -45,7 +45,6 @@ EMAIL_BACKEND = get_secret('EMAIL_BACKEND', 'django.core.mail.backends.console.E
 
 STATIC_ROOT = get_secret('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
 STATIC_URL = get_secret('STATIC_URL', '/static/')
-# STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'users.User'
@@ -89,7 +88,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.auth',
     'django.contrib.admin',
-    'pipeline',
     'reader.users',
     'reader',
 )
@@ -136,30 +134,3 @@ LOGGING = {
 
 READER_TOKEN_EXPIRE = get_secret('READER_TOKEN_EXPIRE', 2, cast=int)  # Expire login tokens after 2 hours.
 READER_UPDATE_PROCESSES = 3  # Number of worker processes to use when updating feeds.
-
-# Pipeline
-
-PIPELINE = {
-    'PIPELINE_ENABLED': False,
-    'JS_COMPRESSOR': None,
-    'CSS_COMPRESSOR': None,
-    'DISABLE_WRAPPER': True,
-    'JAVASCRIPT': {
-        'reader': {
-            'source_filenames': (
-                'reader/js/spin.js',
-                'reader/js/reader.js',
-            ),
-            'output_filename': 'reader.js',
-        },
-    },
-    'STYLESHEETS': {
-        'reader': {
-            'source_filenames': (
-                'reader/css/font-awesome.css',
-                'reader/css/reader.css',
-            ),
-            'output_filename': 'reader.css',
-        },
-    },
-}
